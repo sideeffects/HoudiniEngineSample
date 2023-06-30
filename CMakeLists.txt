@@ -2,65 +2,77 @@ cmake_minimum_required( VERSION 3.1 )
 
 project( HoudiniEngineSample )
 
-IF(NOT DEFINED ENV{HOUDINI_HAPI_LIB})
-    message(FATAL_ERROR "The HOUDINI_HAPI_LIB environment variable must be "
-                         "set to build the HoudiniEngineSample.")
-ENDIF()
-
-IF(NOT DEFINED ENV{HOUDINI_HAPI_HEADERS})
-    message(FATAL_ERROR "The HOUDINI_HAPI_LIB environment variable must be "
-                        "set to build the HoudiniEngineSample.")
+IF(NOT DEFINED ENV{HFS})
+    message(FATAL_ERROR "The HFS environment variable must be set to your "
+                         "Houdini installation directory to build "
+                         "the HoudiniEngineSample.")
 ENDIF()
 
 set( HE_SAMPLE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set( SOURCES
-    ${HE_SAMPLE_ROOT}/HoudiniEngineGeometry.cpp
-    ${HE_SAMPLE_ROOT}/HoudiniEngineManager.cpp
-    ${HE_SAMPLE_ROOT}/HoudiniEngineSample.cpp
-    ${HE_SAMPLE_ROOT}/HoudiniEngineUtility.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniApi.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineGeometry.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineManager.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePlatform.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineSample.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineUtility.cpp
 )
 
 set( HEADERS
-    ${HE_SAMPLE_ROOT}/HoudiniEngineGeometry.h
-    ${HE_SAMPLE_ROOT}/HoudiniEngineManager.h
-    ${HE_SAMPLE_ROOT}/HoudiniEngineUtility.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniApi.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineGeometry.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineManager.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePlatform.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEngineUtility.h
 )
 
-set ( FILES
+set( FILES
     ${HE_SAMPLE_ROOT}/HDA/hexagona_lite.hda
 )
 
 add_executable( ${PROJECT_NAME} ${SOURCES} )
 
-# Link against the import library libHAPIL.lib
-target_link_libraries( ${PROJECT_NAME} PUBLIC $ENV{HOUDINI_HAPI_LIB} )
-
-# Include Houdini Engine headers
-target_include_directories( ${PROJECT_NAME} PUBLIC $ENV{HOUDINI_HAPI_HEADERS} )
-
-set( CMAKE_INSTALL_PREFIX "${HE_SAMPLE_ROOT}" )
-
 if ( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
-    # Setup rpath
-    get_filename_component( HAPI_LIB_DIR ${HOUDINI_HAPI_LIB} DIRECTORY )
+    set( HOUDINI_HAPI_HEADERS "$ENV{HFS}/toolkit/include/" )
+
+    # Setup rpath to locate libHAPIL.so at runtime
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES
-        INSTALL_RPATH "$ENV{HAPI_LIB_DIR}"
+        INSTALL_RPATH "$ENV{HFS}/dsolib/"
     )
-elseif ( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
+    target_link_libraries( ${PROJECT_NAME} ${CMAKE_DL_LIBS} )
 
-    # Setup rpath
-    get_filename_component( HAPI_LIB_DIR ${HOUDINI_HAPI_LIB} DIRECTORY )
-    set_target_properties(
+elseif ( ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" )
+    set( HOUDINI_HAPI_HEADERS "$ENV{HFS}/toolkit/include/" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
+   
+     # Setup rpath to locate libHAPIL.dylib at runtime
+     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES
         MACOSX_RPATH TRUE
-        INSTALL_RPATH "$ENV{HOUDINI_HAPI_LIB}"
+        INSTALL_RPATH "$ENV{HFS}/../Libraries/"
+    )
+    target_link_libraries( ${PROJECT_NAME} ${CMAKE_DL_LIBS} )
+
+elseif ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
+    set( HOUDINI_HAPI_HEADERS "$ENV{HFS}/toolkit/include/" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17" )
+
+    set_target_properties(
+        ${PROJECT_NAME}
+        PROPERTIES 
+        VS_DEBUGGER_ENVIRONMENT "HFS=$ENV{HFS}"
     )
 endif ()
+
+# Include Houdini Engine headers
+target_include_directories( ${PROJECT_NAME} PUBLIC ${HOUDINI_HAPI_HEADERS} )
+
+# Install step
+set( CMAKE_INSTALL_PREFIX "${HE_SAMPLE_ROOT}" )
 
 install( TARGETS ${PROJECT_NAME} DESTINATION "bin" )
 install( FILES ${FILES} DESTINATION "bin/HDA" )

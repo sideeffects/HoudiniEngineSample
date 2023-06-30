@@ -24,6 +24,7 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "HoudiniApi.h"
 #include "HoudiniEngineGeometry.h"
 #include "HoudiniEngineUtility.h"
 
@@ -36,35 +37,35 @@ HoudiniEngineGeometry::sendGeometryToHoudini(const HAPI_Session * session, const
     HAPI_NodeId input_cube = -1;
     std::cout << "\nCreating geometry input node 'input_Cube'..." << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateInputNode(session, &input_cube, "Cube"), false);
+        HoudiniApi::CreateInputNode(session, &input_cube, "Cube"), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CookNode(session, input_cube, cook_options), false);
+        HoudiniApi::CookNode(session, input_cube, cook_options), false);
 
     int cook_status = HAPI_STATE_MAX;
     HAPI_Result result;
     do
     {
-        result = HAPI_GetStatus(session, HAPI_STATUS_COOK_STATE, &cook_status);
+        result = HoudiniApi::GetStatus(session, HAPI_STATUS_COOK_STATE, &cook_status);
     }
     while (cook_status > HAPI_STATE_MAX_READY_STATE && result == HAPI_RESULT_SUCCESS);
     
     HOUDINI_CHECK_ERROR_RETURN(result, false);
     
     // Use the Geometry Setters API to define a cube mesh
-    HAPI_PartInfo node_part = HAPI_PartInfo_Create();
+    HAPI_PartInfo node_part = HoudiniApi::PartInfo_Create();
     node_part.type = HAPI_PARTTYPE_MESH;
     node_part.faceCount = 6;
     node_part.vertexCount = 24;
     node_part.pointCount = 8;
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_SetPartInfo(session, input_cube, 0, &node_part), false);
+        HoudiniApi::SetPartInfo(session, input_cube, 0, &node_part), false);
     
     // Add 'P' (position) point attributes
     std::cout << "  Setting position (P) point attributes" << std::endl;
 
-    HAPI_AttributeInfo node_point_info = HAPI_AttributeInfo_Create();
+    HAPI_AttributeInfo node_point_info = HoudiniApi::AttributeInfo_Create();
     node_point_info.count = 8;
     node_point_info.tupleSize = 3;
     node_point_info.exists = true;
@@ -72,7 +73,7 @@ HoudiniEngineGeometry::sendGeometryToHoudini(const HAPI_Session * session, const
     node_point_info.owner = HAPI_ATTROWNER_POINT;
     
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_AddAttribute(session, input_cube, 0, "P", &node_point_info), false);
+        HoudiniApi::AddAttribute(session, input_cube, 0, "P", &node_point_info), false);
     
     float positions[24] = { 0.0f, 0.0f, 0.0f,
                             0.0f, 0.0f, 1.0f,
@@ -84,7 +85,7 @@ HoudiniEngineGeometry::sendGeometryToHoudini(const HAPI_Session * session, const
                             1.0f, 1.0f, 1.0f };
     
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_SetAttributeFloatData(
+        HoudiniApi::SetAttributeFloatData(
             session, input_cube,
             0, "P", &node_point_info,
             positions, 0, 8), false );
@@ -99,61 +100,61 @@ HoudiniEngineGeometry::sendGeometryToHoudini(const HAPI_Session * session, const
     
     std::cout << "  Setting vertex list and face count" << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_SetVertexList(session, input_cube, 0, vertices, 0, 24), false);
+        HoudiniApi::SetVertexList(session, input_cube, 0, vertices, 0, 24), false);
    
     // Set face counts
     int face_counts [ 6 ] = { 4, 4, 4, 4, 4, 4 };
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_SetFaceCounts(session, input_cube, 0, face_counts, 0, 6), false);
+        HoudiniApi::SetFaceCounts(session, input_cube, 0, face_counts, 0, 6), false);
     
     std::cout << "Sending data to the Houdini cook engine" << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CommitGeo(session, input_cube), false);
+        HoudiniApi::CommitGeo(session, input_cube), false);
 
     // Add 'Cd' (Colour) point attributes
     std::cout << "  Connecting a Color SOP node" << std::endl;
 
-    HAPI_NodeInfo node_info = HAPI_NodeInfo_Create();
+    HAPI_NodeInfo node_info = HoudiniApi::NodeInfo_Create();
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetNodeInfo(session, input_cube, &node_info), false);
+        HoudiniApi::GetNodeInfo(session, input_cube, &node_info), false);
 
     HAPI_NodeId parent_id = node_info.parentId;
     HAPI_NodeId color_node = -1;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateNode(session, parent_id, "color", "Cube_Color", true, &color_node), false);
+        HoudiniApi::CreateNode(session, parent_id, "color", "Cube_Color", true, &color_node), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_ConnectNodeInput(session, color_node, 0, input_cube, 0), false);
+        HoudiniApi::ConnectNodeInput(session, color_node, 0, input_cube, 0), false);
 
     // Add 'N' (Normal) point attributes
     std::cout << "  Connecting a Normal SOP node" << std::endl;
 
     HAPI_NodeId normal_node = -1;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateNode(session, parent_id, "normal", "Cube_Normal", true, &normal_node), false);
+        HoudiniApi::CreateNode(session, parent_id, "normal", "Cube_Normal", true, &normal_node), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_ConnectNodeInput(session, normal_node, 0, color_node, 0), false);
+        HoudiniApi::ConnectNodeInput(session, normal_node, 0, color_node, 0), false);
 
     // Add 'UV' point attributes
     std::cout << "  Connecting a UV Project SOP node" << std::endl;
 
     HAPI_NodeId uv_project_node = -1;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateNode(session, parent_id, "uvproject", "Cube_UV", true, &uv_project_node), false);
+        HoudiniApi::CreateNode(session, parent_id, "uvproject", "Cube_UV", true, &uv_project_node), false);
     
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_ConnectNodeInput(session, uv_project_node, 0, normal_node, 0), false);
+        HoudiniApi::ConnectNodeInput(session, uv_project_node, 0, normal_node, 0), false);
 
     // Add Output node & enable its display flag
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateNode(session, parent_id, "output", "OUT", true, output_node), false);
+        HoudiniApi::CreateNode(session, parent_id, "output", "OUT", true, output_node), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_ConnectNodeInput(session, *output_node, 0, uv_project_node, 0), false);
+        HoudiniApi::ConnectNodeInput(session, *output_node, 0, uv_project_node, 0), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_SetNodeDisplay(session, *output_node, 1), false);
+        HoudiniApi::SetNodeDisplay(session, *output_node, 1), false);
 
     return true;
 }
@@ -162,23 +163,23 @@ bool
 HoudiniEngineGeometry::readGeometryFromHoudini(const HAPI_Session * session, const HAPI_NodeId node_id, const HAPI_CookOptions * cook_options)
 {
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CookNode(session, node_id, cook_options), false);
+        HoudiniApi::CookNode(session, node_id, cook_options), false);
 
     // Get mesh geo info.
     std::cout << "\nGetting mesh geometry info:" << std::endl;
     HAPI_GeoInfo mesh_geo_info;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetDisplayGeoInfo(session, node_id, &mesh_geo_info), false);
+        HoudiniApi::GetDisplayGeoInfo(session, node_id, &mesh_geo_info), false);
 
     // Get mesh part info.
     HAPI_PartInfo mesh_part_info;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetPartInfo(session, mesh_geo_info.nodeId, 0, &mesh_part_info), false);
+        HoudiniApi::GetPartInfo(session, mesh_geo_info.nodeId, 0, &mesh_part_info), false);
 
     // Get mesh face counts.
     std::vector<int> mesh_face_counts(mesh_part_info.faceCount);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetFaceCounts(
+        HoudiniApi::GetFaceCounts(
             session,
             mesh_geo_info.nodeId,
             mesh_part_info.id,
@@ -192,7 +193,7 @@ HoudiniEngineGeometry::readGeometryFromHoudini(const HAPI_Session * session, con
     // Get mesh vertex list.
     std::vector<int> mesh_vertex_list(mesh_part_info.vertexCount);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetVertexList(
+        HoudiniApi::GetVertexList(
             session, 
             mesh_geo_info.nodeId,
             mesh_part_info.id,
@@ -210,7 +211,7 @@ HoudiniEngineGeometry::readGeometryFromHoudini(const HAPI_Session * session, con
     {
         HAPI_AttributeInfo mesh_attrib_info;
         HOUDINI_CHECK_ERROR(
-            HAPI_GetAttributeInfo(
+            HoudiniApi::GetAttributeInfo(
                 session,
                 mesh_geo_info.nodeId, 
                 mesh_part_info.id,
@@ -220,7 +221,7 @@ HoudiniEngineGeometry::readGeometryFromHoudini(const HAPI_Session * session, con
         
         mesh_attrib_data.resize(mesh_attrib_info.count * mesh_attrib_info.tupleSize);
         HOUDINI_CHECK_ERROR(
-            HAPI_GetAttributeFloatData(
+            HoudiniApi::GetAttributeFloatData(
                 session, 
                 mesh_geo_info.nodeId, 
                 mesh_part_info.id, 

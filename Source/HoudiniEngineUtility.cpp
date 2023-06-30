@@ -24,6 +24,7 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "HoudiniApi.h"
 #include "HoudiniEngineUtility.h"
 
 #include <iostream>
@@ -34,7 +35,7 @@ std::string
 HoudiniEngineUtility::getLastError(HAPI_Session* session)
 {
     int buffer_length = 0;
-    HAPI_GetStatusStringBufLength(
+    HoudiniApi::GetStatusStringBufLength(
         session,
         HAPI_STATUS_CALL_RESULT,
         HAPI_STATUSVERBOSITY_ERRORS,
@@ -44,7 +45,7 @@ HoudiniEngineUtility::getLastError(HAPI_Session* session)
         return std::string("");
 
     char * buffer = new char[buffer_length];
-    HAPI_GetStatusString(session, HAPI_STATUS_CALL_RESULT, buffer, buffer_length);
+    HoudiniApi::GetStatusString(session, HAPI_STATUS_CALL_RESULT, buffer, buffer_length);
     std::string result(buffer);
     delete[] buffer;
 
@@ -55,7 +56,7 @@ std::string
 HoudiniEngineUtility::getLastCookError(HAPI_Session* session)
 {
     int buffer_length = 0;
-    HAPI_GetStatusStringBufLength(
+    HoudiniApi::GetStatusStringBufLength(
         session,
         HAPI_STATUS_COOK_RESULT,
         HAPI_STATUSVERBOSITY_ERRORS,
@@ -65,7 +66,7 @@ HoudiniEngineUtility::getLastCookError(HAPI_Session* session)
         return std::string("");
 
     char * buffer = new char[buffer_length];
-    HAPI_GetStatusString(session, HAPI_STATUS_COOK_RESULT, buffer, buffer_length);
+    HoudiniApi::GetStatusString(session, HAPI_STATUS_COOK_RESULT, buffer, buffer_length);
     std::string result(buffer);
     delete[] buffer;
     
@@ -77,13 +78,13 @@ std::string
 HoudiniEngineUtility::getConnectionError()
 {
     int buffer_length = 0;
-    HAPI_GetConnectionErrorLength(&buffer_length);
+    HoudiniApi::GetConnectionErrorLength(&buffer_length);
 
     if (buffer_length <= 0)
         return std::string("");
 
     char* buffer = new char[buffer_length];
-    HAPI_GetConnectionError(buffer, buffer_length, true);
+    HoudiniApi::GetConnectionError(buffer, buffer_length, true);
 
     std::string result(buffer);
     delete[] buffer;
@@ -95,10 +96,10 @@ std::string
 HoudiniEngineUtility::getString(const HAPI_Session * session, HAPI_StringHandle string_handle)
 {
     int length = 0;
-    HAPI_GetStringBufLength(session, string_handle, &length);
+    HoudiniApi::GetStringBufLength(session, string_handle, &length);
 
     char * buffer = new char[length + 1];
-    HAPI_GetString(session, string_handle, buffer, length);
+    HoudiniApi::GetString(session, string_handle, buffer, length);
 
     std::string result(buffer);
     delete [] buffer;
@@ -112,6 +113,6 @@ HoudiniEngineUtility::saveToHip(const HAPI_Session * session, const std::string&
     // Saving to the current directory
     std::string filepath = "./" + filename;
 
-    HAPI_Result result = HAPI_SaveHIPFile(session, filepath.c_str(), /*lock_nodes=*/false);
+    HAPI_Result result = HoudiniApi::SaveHIPFile(session, filepath.c_str(), /*lock_nodes=*/false);
     return result == HAPI_RESULT_SUCCESS;
 }

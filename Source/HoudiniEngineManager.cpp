@@ -24,6 +24,7 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "HoudiniApi.h"
 #include "HoudiniEngineManager.h"
 #include "HoudiniEngineUtility.h"
 
@@ -38,11 +39,11 @@ bool
 HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_debugger, bool use_cooking_thread)
 {
     // Only start a new Session if we dont already have a valid one
-    if (HAPI_RESULT_SUCCESS == HAPI_IsSessionValid(&mySession))
+    if (HAPI_RESULT_SUCCESS == HoudiniApi::IsSessionValid(&mySession))
         return true;
 
     // Clear the connection error before starting a new session
-    HAPI_ClearConnectionError();
+    HoudiniApi::ClearConnectionError();
 
     // Init the thrift server options
     HAPI_ThriftServerOptions server_options{ 0 };
@@ -57,25 +58,25 @@ HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_deb
         std::cout << "Creating a HAPI in-process session...\n";
 
         // In-Process HAPI
-        SessionResult = HAPI_CreateInProcessSession(&mySession);
+        SessionResult = HoudiniApi::CreateInProcessSession(&mySession);
     }
     else if (session_type == SessionType::NamedPipe)
     {
         std::cout << "Creating a HAPI named-pipe session...\n";
 
         // Try to connect to an existing session first...this may fail
-        SessionResult = HAPI_CreateThriftNamedPipeSession(&mySession, "hapi");
+        SessionResult = HoudiniApi::CreateThriftNamedPipeSession(&mySession, "hapi");
 
         if (!connect_to_debugger && SessionResult != HAPI_RESULT_SUCCESS)
         {
             // start our server
             std::cout << "Starting a named-pipe server...\n";
             HAPI_ProcessId process_id;
-            HOUDINI_CHECK_ERROR(HAPI_StartThriftNamedPipeServer(&server_options, "hapi", &process_id, nullptr));
+            HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftNamedPipeServer(&server_options, "hapi", &process_id, nullptr));
 
             // and connect to the newly started server
             std::cout << "Connecting to the named-pipe session...\n";
-            SessionResult = HAPI_CreateThriftNamedPipeSession(&mySession, "hapi");
+            SessionResult = HoudiniApi::CreateThriftNamedPipeSession(&mySession, "hapi");
         }
     }
     else
@@ -83,7 +84,7 @@ HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_deb
         std::cout << "Creating a HAPI TCP socket session...\n";
 
         // Try to connect to an existing  session first...
-        SessionResult = HAPI_CreateThriftSocketSession(&mySession, "localhost", 9090);
+        SessionResult = HoudiniApi::CreateThriftSocketSession(&mySession, "localhost", 9090);
 
         // TCP Socket server
         if (!connect_to_debugger && SessionResult != HAPI_RESULT_SUCCESS)
@@ -91,11 +92,11 @@ HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_deb
             // start our server
             std::cout << "Starting a TCP socket server...\n";
             HAPI_ProcessId process_id;
-            HOUDINI_CHECK_ERROR(HAPI_StartThriftSocketServer(&server_options, 9090, &process_id, nullptr));
+            HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftSocketServer(&server_options, 9090, &process_id, nullptr));
 
             // and connect to the newly started server
             std::cout << "Connecting to the TCP socket session...\n";
-            SessionResult = HAPI_CreateThriftSocketSession(&mySession, "localhost", 9090);
+            SessionResult = HoudiniApi::CreateThriftSocketSession(&mySession, "localhost", 9090);
         }
     }
 
@@ -119,17 +120,17 @@ HoudiniEngineManager::stopSession()
 {
     std::cout << "\nCleaning up and closing session..." << std::endl;
 
-    if (HAPI_RESULT_SUCCESS == HAPI_IsSessionValid(&mySession))
+    if (HAPI_RESULT_SUCCESS == HoudiniApi::IsSessionValid(&mySession))
     {
         // SessionPtr is valid, clean up and close the session
-        HAPI_Cleanup(&mySession);
+        HoudiniApi::Cleanup(&mySession);
 
         // When using an in-process session, this method must be called 
         // in order for the host process to shutdown cleanly.
         if (mySessionType == InProcess)
-            HAPI_Shutdown(&mySession);
+            HoudiniApi::Shutdown(&mySession);
 
-        HAPI_CloseSession(&mySession);
+        HoudiniApi::CloseSession(&mySession);
     }
 
     return true;
@@ -170,16 +171,16 @@ bool
 HoudiniEngineManager::initializeHAPI(bool use_cooking_thread)
 {
     // We need a Valid Session
-    if (HAPI_RESULT_SUCCESS != HAPI_IsSessionValid(getSession()))
+    if (HAPI_RESULT_SUCCESS != HoudiniApi::IsSessionValid(getSession()))
     {
         std::cout << "Failed to initialize HAPI: The session is invalid." << std::endl;
         return false;
     }
 
-    if (HAPI_IsInitialized(getSession()) == HAPI_RESULT_NOT_INITIALIZED)
+    if (HoudiniApi::IsInitialized(getSession()) == HAPI_RESULT_NOT_INITIALIZED)
     {
         // Initialize HAPI
-        HAPI_CookOptions cook_options = HAPI_CookOptions_Create();
+        HAPI_CookOptions cook_options = HoudiniApi::CookOptions_Create();
 
         cook_options.curveRefineLOD = 8.0f;
         cook_options.clearErrorsAndWarnings = false;
@@ -191,7 +192,7 @@ HoudiniEngineManager::initializeHAPI(bool use_cooking_thread)
         cook_options.splitPointsByVertexAttributes = false;
         cook_options.packedPrimInstancingMode = HAPI_PACKEDPRIM_INSTANCING_MODE_FLAT;
 
-        HAPI_Result Result = HAPI_Initialize(
+        HAPI_Result Result = HoudiniApi::Initialize(
             getSession(),           // session
             &cook_options,
             use_cooking_thread,     // use_cooking_thread
@@ -246,10 +247,10 @@ HoudiniEngineManager::loadAsset(const char* otl_path, HAPI_AssetLibraryId& asset
     // Load the library from file
     std::cout << "Loading asset..." << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_LoadAssetLibraryFromFile(getSession(), otl_path, false, &asset_library_id), false); 
+        HoudiniApi::LoadAssetLibraryFromFile(getSession(), otl_path, false, &asset_library_id), false); 
 
     int asset_count;
-    HOUDINI_CHECK_ERROR_RETURN(HAPI_GetAvailableAssetCount(getSession(), asset_library_id, &asset_count), false);
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetAvailableAssetCount(getSession(), asset_library_id, &asset_count), false);
     if (asset_count > 1)
     {
         std::cout << "Should only be loading 1 asset here" << std::endl;
@@ -257,7 +258,7 @@ HoudiniEngineManager::loadAsset(const char* otl_path, HAPI_AssetLibraryId& asset
     }
 
     HAPI_StringHandle assetSH;
-    HOUDINI_CHECK_ERROR_RETURN(HAPI_GetAvailableAssets(getSession(), asset_library_id, &assetSH, asset_count),false);
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetAvailableAssets(getSession(), asset_library_id, &assetSH, asset_count),false);
     asset_name = HoudiniEngineUtility::getString(getSession(), assetSH);
     
     std::cout << "  Loaded: " << asset_name << std::endl;
@@ -269,10 +270,10 @@ HoudiniEngineManager::createAndCookNode(const char* operator_name, HAPI_NodeId *
 {
     std::cout << "\nCreating and cooking node: " << operator_name << "..." << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CreateNode(getSession(), -1, operator_name, "hexagona_lite", false, node_id), false);
+        HoudiniApi::CreateNode(getSession(), -1, operator_name, "hexagona_lite", false, node_id), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_CookNode(getSession(), *node_id, getCookOptions()), false);
+        HoudiniApi::CookNode(getSession(), *node_id, getCookOptions()), false);
     
     if(waitForCook())
     {
@@ -291,7 +292,7 @@ HoudiniEngineManager::waitForCook()
     HAPI_Result result;
     do
     {
-        result = HAPI_GetStatus(getSession(), HAPI_STATUS_COOK_STATE, &status);
+        result = HoudiniApi::GetStatus(getSession(), HAPI_STATUS_COOK_STATE, &status);
     }
     while(status > HAPI_STATE_MAX_READY_STATE && result == HAPI_RESULT_SUCCESS);
 
@@ -307,11 +308,11 @@ bool
 HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
 {
     HAPI_NodeInfo node_info;
-    HOUDINI_CHECK_ERROR_RETURN(HAPI_GetNodeInfo(getSession(), node_id, &node_info), false);
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetNodeInfo(getSession(), node_id, &node_info), false);
     
     HAPI_ParmInfo * parm_infos = new HAPI_ParmInfo[node_info.parmCount];
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetParameters(
+        HoudiniApi::GetParameters(
             getSession(), 
             node_id, 
             parm_infos, 
@@ -327,13 +328,13 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
         std::cout << HoudiniEngineUtility::getString(getSession(), parm_infos[i].nameSH) << std::endl;
         std::cout << "  Values: (";
 
-        if (HAPI_ParmInfo_IsInt(&parm_infos[i]))
+        if (HoudiniApi::ParmInfo_IsInt(&parm_infos[i]))
         {
-            int parm_int_count = HAPI_ParmInfo_GetIntValueCount(&parm_infos[i]);
+            int parm_int_count = HoudiniApi::ParmInfo_GetIntValueCount(&parm_infos[i]);
             int * parm_int_values = new int[parm_int_count];
         
             HOUDINI_CHECK_ERROR_RETURN(
-                HAPI_GetParmIntValues(
+                HoudiniApi::GetParmIntValues(
                     getSession(),
                     node_id, parm_int_values,
                     parm_infos[i].intValuesIndex,
@@ -349,13 +350,13 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
         
             delete [] parm_int_values;
         }
-        else if (HAPI_ParmInfo_IsFloat(&parm_infos[i]))
+        else if (HoudiniApi::ParmInfo_IsFloat(&parm_infos[i]))
         {
-            int parm_float_count = HAPI_ParmInfo_GetFloatValueCount(&parm_infos[i]);
+            int parm_float_count = HoudiniApi::ParmInfo_GetFloatValueCount(&parm_infos[i]);
             float * parm_float_values = new float[parm_float_count];
         
             HOUDINI_CHECK_ERROR_RETURN(
-                HAPI_GetParmFloatValues(
+                HoudiniApi::GetParmFloatValues(
                     getSession(),
                     node_id, parm_float_values,
                     parm_infos[i].floatValuesIndex,
@@ -371,13 +372,13 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
         
             delete [] parm_float_values;
         }
-        else if (HAPI_ParmInfo_IsString(&parm_infos[i]))
+        else if (HoudiniApi::ParmInfo_IsString(&parm_infos[i]))
         {
-            int parm_string_count = HAPI_ParmInfo_GetStringValueCount(&parm_infos[i]);
+            int parm_string_count = HoudiniApi::ParmInfo_GetStringValueCount(&parm_infos[i]);
             HAPI_StringHandle * parmSH_values = new HAPI_StringHandle[parm_string_count];
     
             HOUDINI_CHECK_ERROR_RETURN(
-                HAPI_GetParmStringValues(
+                HoudiniApi::GetParmStringValues(
                     getSession(),
                     node_id,
                     true, parmSH_values,
@@ -405,9 +406,9 @@ bool
 HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
 {
     HAPI_PartInfo part_info;
-    HAPI_PartInfo_Init(&part_info);
+    HoudiniApi::PartInfo_Init(&part_info);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetPartInfo(getSession(), node_id, part_id, &part_info), false);
+        HoudiniApi::GetPartInfo(getSession(), node_id, part_id, &part_info), false);
 
     int vertex_attr_count = part_info.attributeCounts[HAPI_ATTROWNER_VERTEX];
     int point_attr_count = part_info.attributeCounts[HAPI_ATTROWNER_POINT];
@@ -421,7 +422,7 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
     std::vector <HAPI_StringHandle> point_attr_nameSH;
     point_attr_nameSH.resize(point_attr_count);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetAttributeNames(
+        HoudiniApi::GetAttributeNames(
             getSession(), 
             node_id, part_id, 
             HAPI_ATTROWNER_POINT, 
@@ -437,9 +438,9 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
         std::cout << "  Name: " << attr_name << std::endl;
         
         HAPI_AttributeInfo attr_info;
-        HAPI_AttributeInfo_Init(&attr_info);
+        HoudiniApi::AttributeInfo_Init(&attr_info);
         HOUDINI_CHECK_ERROR_RETURN(
-            HAPI_GetAttributeInfo(
+            HoudiniApi::GetAttributeInfo(
                 getSession(), 
                 node_id, part_id, 
                 attr_name.c_str(), 
@@ -454,7 +455,7 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
     std::vector <HAPI_StringHandle> vertex_attr_nameSH;
     vertex_attr_nameSH.resize(vertex_attr_count);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetAttributeNames(
+        HoudiniApi::GetAttributeNames(
             getSession(), 
             node_id, 
             part_id, 
@@ -471,9 +472,9 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
         std::cout << "  Name: " << attr_name << std::endl;
         
         HAPI_AttributeInfo attr_info;
-        HAPI_AttributeInfo_Init(&attr_info);
+        HoudiniApi::AttributeInfo_Init(&attr_info);
         HOUDINI_CHECK_ERROR_RETURN(
-            HAPI_GetAttributeInfo(
+            HoudiniApi::GetAttributeInfo(
                 getSession(), 
                 node_id, part_id, 
                 attr_name.c_str(), 
@@ -488,7 +489,7 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
     std::vector <HAPI_StringHandle> prim_attr_nameSH;
     prim_attr_nameSH.resize(prim_attr_count);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetAttributeNames(
+        HoudiniApi::GetAttributeNames(
             getSession(),
             node_id, part_id, 
             HAPI_ATTROWNER_PRIM, 
@@ -504,9 +505,9 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
         std::cout << "  Name: " << attr_name << std::endl;
 
         HAPI_AttributeInfo attr_info;
-        HAPI_AttributeInfo_Init(&attr_info);
+        HoudiniApi::AttributeInfo_Init(&attr_info);
         HOUDINI_CHECK_ERROR_RETURN(
-            HAPI_GetAttributeInfo(
+            HoudiniApi::GetAttributeInfo(
                 getSession(), 
                 node_id, part_id, 
                 attr_name.c_str(), 
@@ -521,7 +522,7 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
     std::vector <HAPI_StringHandle> detail_attr_nameSH;
     detail_attr_nameSH.resize(detail_attr_count);
     HOUDINI_CHECK_ERROR_RETURN(
-        HAPI_GetAttributeNames(
+        HoudiniApi::GetAttributeNames(
             getSession(),
             node_id, part_id, 
             HAPI_ATTROWNER_DETAIL, 

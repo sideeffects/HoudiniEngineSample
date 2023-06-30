@@ -10,28 +10,23 @@ Please visit our [Houdini Engine Documentation](https://www.sidefx.com/docs/heng
 
 ### Compiling
 
-Set the following environment variables to build with your local copy of the Houdini Engine headers and import library:
+You must first initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
 
-Windows:
 ```
-export HOUDINI_INSTALL_DIR=`cygpath -ms "<HOUDINI_INSTALL_DIR>"`
-export HOUDINI_HAPI_HEADERS=$HOUDINI_INSTALL_DIR/toolkit/include/
-export HOUDINI_HAPI_LIB=$HOUDINI_INSTALL_DIR/custom/houdini/dsolib/libHAPIL.lib
-```
+# Windows:
+cd "C:\\Program Files\\Side Effects Software\\Houdini x.x.x"
+source houdini_setup
 
-Mac:
-```
-export HOUDINI_HAPI_HEADERS=$HOUDINI_INSTALL_DIR/Frameworks/Houdini.framework/Resources/toolkit/include/
-export HOUDINI_HAPI_LIB=$HOUDINI_INSTALL_DIR/Frameworks/Houdini.framework/Libraries/libHAPIL.dylib
-```
+# Mac:
+cd /Applications/Houdini/Houdinix.x.x/Frameworks/Houdini.framework/Resources
+source houdini_setup
 
-Linux:
-```
-export HOUDINI_HAPI_HEADERS=$HOUDINI_INSTALL_DIR/toolkit/include/
-export HOUDINI_HAPI_LIB=$HOUDINI_INSTALL_DIR/dsolib/libHAPIL.so
+# Linux:
+cd /opt/hfsx.x.x
+source houdini_setup
 ```
 
-Run cmake & Build:
+Then return to your project directory to run cmake & build:
 ```
 mkdir build
 cd build
@@ -44,7 +39,7 @@ This will place the HoudiniEngineSample execuatble in the project's /bin folder.
 ### Project Structure
 
 * HoudiniEngineManager - How to start/cleanup sessions, load HDAs and query parameters & attributes
-* HoudiniEngineGeometry - How to marshal geometry in and out of Houdini.
+* HoudiniEngineGeometry - How to marshal geometry in and out of Houdini
 * HoudiniEngineUtility - Utility functions for string conversion, fetching errors etc.
 * HDA/hexagona_lite.hda - Sample HDA for generating hexagonal terrain
 

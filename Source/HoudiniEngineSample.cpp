@@ -24,8 +24,10 @@
 * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "HoudiniApi.h"
 #include "HoudiniEngineGeometry.h"
 #include "HoudiniEngineManager.h"
+#include "HoudiniEnginePlatform.h"
 #include "HoudiniEngineUtility.h"
 
 #include <iostream>
@@ -56,6 +58,19 @@ main(int argc, char ** argv)
     std::cout << " Houdini Engine Sample Application " << std::endl;
     std::cout << "===================================\n" << std::endl;
 
+    // Dynamically load the libHAPIL and load the HAPI
+    // functions exported from the dll
+    void* libHAPIL = HoudiniEnginePlatform::LoadLibHAPIL();
+    if (libHAPIL != nullptr)
+        HoudiniApi::InitializeHAPI(libHAPIL);
+
+    if (!HoudiniApi::IsHAPIInitialized())
+    {
+        std::cerr << "Failed to load and initialize the "
+                     "Houdini Engine API from libHAPIL." << std::endl;
+        return 1;
+    }  
+    
     bool use_debugger = false;      // Set to 'True' if debugging app via SessionSync.
     bool use_cooking_thread = true; // Enables asynchronous cooking of nodes.
 
@@ -73,17 +88,17 @@ main(int argc, char ** argv)
         std::cerr << "Failed to create the Houdini Engine Manager." << std::endl;
         return 1;
     }
-        
-    if(!he_manager->startSession(
+
+    if (!he_manager->startSession(
         (HoudiniEngineManager::SessionType)session_type,
         use_debugger,
         use_cooking_thread))
     {
-        std::cerr << "Failed to initialize HAPI." << std::endl;
+        std::cerr << "Failed to create a Houdini Engine session." << std::endl;
         return 1;
     }
 
-    if(!he_manager->initializeHAPI(use_cooking_thread))
+    if (!he_manager->initializeHAPI(use_cooking_thread))
     {
         std::cerr << "Failed to initialize HAPI." << std::endl;
         return 1;
@@ -93,7 +108,7 @@ main(int argc, char ** argv)
     HAPI_AssetLibraryId AssetId = -1;
     std::string AssetName;
 
-    if(!he_manager->loadAsset("../HDA/hexagona_lite.hda", AssetId, AssetName))
+    if (!he_manager->loadAsset("../HDA/hexagona_lite.hda", AssetId, AssetName))
     {
         std::cerr << "Failed to load the default HDA." << std::endl;
         return 1;
@@ -168,8 +183,11 @@ main(int argc, char ** argv)
                 std::cout << HoudiniEngineUtility::getLastError() << std::endl;
         }
     }
-
     he_manager->stopSession();
+    delete he_manager;
+
+    HoudiniApi::FinalizeHAPI();
+    HoudiniEnginePlatform::FreeLibHAPIL(libHAPIL);
 
     return 0;
 }
