@@ -2,7 +2,7 @@
 
 Welcome to the Houdini Engine Sample Application.
 
-This app is intended for studios to use as reference and inspiration when writing Houdini integrations for their own DCC application or game engine using Houdini Engine. Overtime we hope to update the source code you find here with best practices and code samples to handle use-cases such as working with multiparms, heightfields, leveraging PDG and more.
+This app is intended for studios to use as reference and inspiration when writing Houdini integrations for their own DCC application or game engine. Overtime we hope to update the project with code samples to handle use-cases such as working with multiparms, heightfields, leveraging PDG and more.
 
 ### Documentation
 
@@ -34,18 +34,20 @@ cmake ..
 cmake --build . --target install
 ```
 
-This will place the HoudiniEngineSample execuatble in the project's /bin folder.
+This will place the HoudiniEngineSample executable in the project's /bin folder.
 
 ### Project Structure
 
 * HoudiniEngineManager - How to start/cleanup sessions, load HDAs and query parameters & attributes
 * HoudiniEngineGeometry - How to marshal geometry in and out of Houdini
 * HoudiniEngineUtility - Utility functions for string conversion, fetching errors etc.
+* HoudiniEnginePlatform - Contains OS-specific code for loading the libHAPIL library
+* HoudiniApi - This file is generated (do not modify directly). Initializes the HAPI API with functions exported from libHAPIL.
 * HDA/hexagona_lite.hda - Sample HDA for generating hexagonal terrain
 
 ### Version Compatibility
 
-The HoudiniEngineSample application is compatible with HAPI version 5.0. For more details please see:https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
+The HoudiniEngineSample application is compatible with HAPI version 5.0. For more details please see: https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
 
 ### More Resources
 
