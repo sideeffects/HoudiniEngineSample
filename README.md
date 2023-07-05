@@ -2,7 +2,7 @@
 
 Welcome to the Houdini Engine Sample Application.
 
-This app is intended for studios to use as reference and inspiration when writing Houdini integrations for their own DCC application or game engine. Overtime we hope to update the project with code samples to handle use-cases such as working with multiparms, heightfields, leveraging PDG and more.
+This app is intended for studios to use as reference and inspiration when writing Houdini integrations for their own DCC application or game engine. Over time we hope to update the project with code samples to handle use cases such as working with multiparms, heightfields, leveraging PDG and more.
 
 ### Documentation
 
@@ -10,7 +10,7 @@ Please visit our [Houdini Engine Documentation](https://www.sidefx.com/docs/heng
 
 ### Compiling
 
-You must first initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
+First initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
 
 ```
 # Windows:

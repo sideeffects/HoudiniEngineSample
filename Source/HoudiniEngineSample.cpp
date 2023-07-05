@@ -40,7 +40,7 @@ printCommandMenu()
     std::cout << "------------------------------" << std::endl;
     std::cout << "Working with HDAs" << std::endl;
     std::cout << "  - cook: Create & cook the hexagona sample HDA" << std::endl;
-    std::cout << "  - parms: Fetch and print node paramters" << std::endl;
+    std::cout << "  - parms: Fetch and print node parameters" << std::endl;
     std::cout << "  - attribs: Fetch and print node attributes" << std::endl;
     std::cout << "Working with Geometry" << std::endl;
     std::cout << "  - setgeo: Marshal mesh data to Houdini" << std::endl;
@@ -78,7 +78,8 @@ main(int argc, char ** argv)
     std::cout << "  1: In-Process Session \n";
     std::cout << "  2: Named-Pipe Session \n";
     std::cout << "  3: TCP Socket Session \n";
-
+    std::cout << ">> ";
+    
     int session_type;
     std::cin >> session_type;
 
