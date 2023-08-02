@@ -8,9 +8,13 @@ This app is intended for studios to use as reference and inspiration when writin
 
 Please visit our [Houdini Engine Documentation](https://www.sidefx.com/docs/hengine/index.html) for information on how to maintain and extend the sample code provided to build your own Houdini Engine integration.
 
-### Compiling
+### Prerequisites
 
-First initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
+The HoudiniEngineSample is built using CMake which can be downloaded and installed from here: https://cmake.org/download/ (minimum required version is 3.1).
+
+### Building the Sample
+
+Initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
 
 ```
 # Windows:
@@ -26,15 +30,18 @@ cd /opt/hfsx.x.x
 source houdini_setup
 ```
 
-Then return to your project directory to run cmake & build:
+Navigate to a directory with write permissions and fetch a copy of the HoudiniEngineSample project to build.
 ```
+git clone https://github.com/sideeffects/HoudiniEngineSample.git
+cd HoudiniEngineSample
+
 mkdir build
 cd build
 cmake ..
 cmake --build . --target install
 ```
 
-This will place the HoudiniEngineSample executable in the project's /bin folder.
+This will place an executable named `HoudiniEngineSample.exe` in the project's `/bin` folder.
 
 ### Project Structure
 
