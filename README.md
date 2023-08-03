@@ -50,7 +50,7 @@ This will place an executable named `HoudiniEngineSample.exe` in the project's `
 * HoudiniEngineUtility - Utility functions for string conversion, fetching errors etc.
 * HoudiniEnginePlatform - Contains OS-specific code for loading the libHAPIL library
 * HoudiniApi - This file is generated (do not modify directly). Initializes the HAPI API with functions exported from libHAPIL.
-* HDA/hexagona_lite.hda - Sample HDA for generating hexagonal terrain (provided by @christosstavridis)
+* HDA/hexagona_lite.hda - Sample HDA for generating hexagonal terrain (provided by [@christosstavridis](https://github.com/christosstavridis))
 
 ### Version Compatibility
 
