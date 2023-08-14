@@ -17,10 +17,6 @@ The HoudiniEngineSample is built using CMake which can be downloaded and install
 Initialize your envirornment by navigating to your Houdini installation directory and sourcing the `houdini_setup` script.
 
 ```
-# Windows:
-cd "C:\\Program Files\\Side Effects Software\\Houdini x.x.x"
-source houdini_setup
-
 # Mac:
 cd /Applications/Houdini/Houdinix.x.x/Frameworks/Houdini.framework/Resources
 source houdini_setup
@@ -28,9 +24,16 @@ source houdini_setup
 # Linux:
 cd /opt/hfsx.x.x
 source houdini_setup
+
+# Windows:
+cd "C:\\Program Files\\Side Effects Software\\Houdini x.x.x"
+source houdini_setup
+
+Alternatively, if you prefer working in the Command Prompt or Windows Powershell launch the Houdini command-line tools found here:
+"C:\Program Files\Side Effects Software\Houdini x.x.x\bin\hcmd.exe"
 ```
 
-Navigate to a directory with write permissions and fetch a copy of the HoudiniEngineSample project to build.
+Using the same terminal session, navigate to a directory with write permissions and fetch a copy of the HoudiniEngineSample project to build.
 ```
 git clone https://github.com/sideeffects/HoudiniEngineSample.git
 cd HoudiniEngineSample
