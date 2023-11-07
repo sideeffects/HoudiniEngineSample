@@ -70,18 +70,35 @@ main(int argc, char ** argv)
                      "Houdini Engine API from libHAPIL." << std::endl;
         return 1;
     }  
-    
-    bool use_debugger = false;      // Set to 'True' if debugging app via SessionSync.
-    bool use_cooking_thread = true; // Enables asynchronous cooking of nodes.
 
-    std::cout << "How would you like to start a new Houdini Engine Session?" << std::endl;
-    std::cout << "  1: In-Process Session \n";
-    std::cout << "  2: Named-Pipe Session \n";
-    std::cout << "  3: TCP Socket Session \n";
+    std::cout << "Start a new Houdini Engine Session via HARS:" << std::endl;
+    std::cout << "  1: In-Process Session" << std::endl;
+    std::cout << "  2: Named-Pipe Session" << std::endl;
+    std::cout << "  3: TCP Socket Session\n" << std::endl;
+    std::cout << "Connect to an existing Houdini Engine Session via SessionSync:" << std::endl;
+    std::cout << "  4: Existing Named-Pipe Session" << std::endl;
+    std::cout << "  5: Existing TCP Socket Session\n" << std::endl;
     std::cout << ">> ";
     
     int session_type;
     std::cin >> session_type;
+
+    bool use_cooking_thread = true; // Enables asynchronous cooking of nodes.
+    std::string named_pipe = DEFAULT_NAMED_PIPE;
+    int tcp_port = DEFAULT_TCP_PORT;
+
+    if (session_type == HoudiniEngineManager::SessionType::ExistingNamedPipe)
+    {
+        std::cout << "Please specify the pipe name:" << std::endl;
+        std::cout << ">> ";
+        std::cin >> named_pipe;
+    }
+    else if (session_type == HoudiniEngineManager::SessionType::ExistingTCPSocket)
+    {
+        std::cout << "Please specify the TCP port:" << std::endl;
+        std::cout << ">> ";
+        std::cin >> tcp_port;
+    }
 
     HoudiniEngineManager* he_manager = new HoudiniEngineManager();
     if (!he_manager)
@@ -91,9 +108,8 @@ main(int argc, char ** argv)
     }
 
     if (!he_manager->startSession(
-        (HoudiniEngineManager::SessionType)session_type,
-        use_debugger,
-        use_cooking_thread))
+        (HoudiniEngineManager::SessionType)session_type, use_cooking_thread, 
+        named_pipe, tcp_port))
     {
         std::cerr << "Failed to create a Houdini Engine session." << std::endl;
         return 1;
@@ -106,10 +122,11 @@ main(int argc, char ** argv)
     }
 
     std::cout << "\nLoading the hexagona sample HDA: " << std::endl;
-    HAPI_AssetLibraryId AssetId = -1;
-    std::string AssetName;
-
-    if (!he_manager->loadAsset("../HDA/hexagona_lite.hda", AssetId, AssetName))
+    
+    std::string otl_path = HDA_INSTALL_PATH + std::string("/hexagona_lite.hda");
+    HAPI_AssetLibraryId asset_id = -1;
+    std::string asset_name;
+    if (!he_manager->loadAsset(otl_path.c_str(), asset_id, asset_name))
     {
         std::cerr << "Failed to load the default HDA." << std::endl;
         return 1;
@@ -132,7 +149,7 @@ main(int argc, char ** argv)
 
         if (user_cmd == "cook")
         {
-            hexagona_cook = he_manager->createAndCookNode(AssetName.c_str(), &hexagona_node_id);
+            hexagona_cook = he_manager->createAndCookNode(asset_name.c_str(), &hexagona_node_id);
         }
         else if (user_cmd == "parms")
         {

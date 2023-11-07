@@ -76,3 +76,6 @@ set( CMAKE_INSTALL_PREFIX "${HE_SAMPLE_ROOT}" )
 
 install( TARGETS ${PROJECT_NAME} DESTINATION "bin" )
 install( FILES ${FILES} DESTINATION "bin/HDA" )
+
+# Set the HDA_INSTALL_PATH constant referenced in main()
+add_definitions(-DHDA_INSTALL_PATH="${CMAKE_INSTALL_PREFIX}/bin/HDA")

@@ -27,8 +27,11 @@
 #pragma once
 
 #include <HAPI/HAPI.h>
-
 #include <string>
+
+#define DEFAULT_NAMED_PIPE "hapi"
+#define DEFAULT_HOST_NAME "localhost"
+#define DEFAULT_TCP_PORT 9090
 
 class HoudiniEngineManager
 {
@@ -36,17 +39,22 @@ public:
 	enum SessionType
 	{
 		InProcess = 1,
-		NamedPipe = 2,
-		TCPSocket = 3
+		NewNamedPipe = 2,
+		NewTCPSocket = 3,
+		ExistingNamedPipe = 4,
+		ExistingTCPSocket = 5
 	};
 
 	HoudiniEngineManager();
 
 	// Creates a new session
-	bool startSession(SessionType session_type, bool connect_to_debugger, bool use_cooking_thread);
+	bool startSession(SessionType session_type,
+                      bool use_cooking_thread,
+                      const std::string& named_pipe,
+                      int tcp_port);
 	
 	// Stop the existing session if valid, and creates a new session
-	bool restartSession(SessionType session_type, bool connect_to_debugger, bool use_cooking_thread);
+	bool restartSession(SessionType session_type, bool use_cooking_thread);
 	
 	// Cleanup and shutdown an existing session
 	bool stopSession();
@@ -79,4 +87,6 @@ private:
 	HAPI_Session mySession;
 	HAPI_CookOptions myCookOptions;
 	SessionType mySessionType = InProcess;
+	std::string myNamedPipe = DEFAULT_NAMED_PIPE;
+	int myTcpPort = DEFAULT_TCP_PORT;
 };

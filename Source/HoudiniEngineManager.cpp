@@ -36,7 +36,10 @@ HoudiniEngineManager::HoudiniEngineManager() : mySession{}, myCookOptions{}
 }
 
 bool 
-HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_debugger, bool use_cooking_thread)
+HoudiniEngineManager::startSession(SessionType session_type,
+                                   bool use_cooking_thread,
+                                   const std::string& named_pipe,
+                                   int tcp_port)
 {
     // Only start a new Session if we dont already have a valid one
     if (HAPI_RESULT_SUCCESS == HoudiniApi::IsSessionValid(&mySession))
@@ -46,11 +49,13 @@ HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_deb
     HoudiniApi::ClearConnectionError();
 
     // Init the thrift server options
-    HAPI_ThriftServerOptions server_options{ 0 };
+    HAPI_ThriftServerOptions server_options = HoudiniApi::ThriftServerOptions_Create();
     server_options.autoClose = true;
     server_options.timeoutMs = 3000.0f;
 
     mySessionType = session_type;
+    myNamedPipe = named_pipe;
+    myTcpPort = tcp_port;
 
     HAPI_Result SessionResult = HAPI_RESULT_FAILURE;
     if (session_type == SessionType::InProcess)
@@ -60,44 +65,43 @@ HoudiniEngineManager::startSession(SessionType session_type, bool connect_to_deb
         // In-Process HAPI
         SessionResult = HoudiniApi::CreateInProcessSession(&mySession);
     }
-    else if (session_type == SessionType::NamedPipe)
+    else if (session_type == SessionType::NewNamedPipe)
     {
-        std::cout << "Creating a HAPI named-pipe session...\n";
+        // Start our server
+        std::cout << "Starting a named-pipe server...\n";
+        HAPI_ProcessId process_id;
+        HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftNamedPipeServer(
+            &server_options, myNamedPipe.c_str(), &process_id, nullptr));
 
-        // Try to connect to an existing session first...this may fail
-        SessionResult = HoudiniApi::CreateThriftNamedPipeSession(&mySession, "hapi");
+        // Connect to the newly started server
+        std::cout << "Connecting to the named-pipe session...\n";
+        SessionResult = HoudiniApi::CreateThriftNamedPipeSession(
+            &mySession, myNamedPipe.c_str());
+    }
+    else if (session_type == SessionType::NewTCPSocket)
+    {
+        // Start our server
+        std::cout << "Starting a TCP socket server...\n";
+        HAPI_ProcessId process_id;
+        HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftSocketServer(
+            &server_options, myTcpPort, &process_id, nullptr));
 
-        if (!connect_to_debugger && SessionResult != HAPI_RESULT_SUCCESS)
-        {
-            // start our server
-            std::cout << "Starting a named-pipe server...\n";
-            HAPI_ProcessId process_id;
-            HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftNamedPipeServer(&server_options, "hapi", &process_id, nullptr));
-
-            // and connect to the newly started server
-            std::cout << "Connecting to the named-pipe session...\n";
-            SessionResult = HoudiniApi::CreateThriftNamedPipeSession(&mySession, "hapi");
-        }
+        // Connect to the newly started server
+        std::cout << "Connecting to the TCP socket session...\n";
+        SessionResult = HoudiniApi::CreateThriftSocketSession(
+            &mySession, DEFAULT_HOST_NAME, myTcpPort);
+    }
+    else if (session_type == SessionType::ExistingNamedPipe)
+    {
+        std::cout << "Connecting to an existing HAPI named pipe session...\n";
+        SessionResult = HoudiniApi::CreateThriftNamedPipeSession(
+            &mySession, myNamedPipe.c_str());
     }
     else
     {
-        std::cout << "Creating a HAPI TCP socket session...\n";
-
-        // Try to connect to an existing  session first...
-        SessionResult = HoudiniApi::CreateThriftSocketSession(&mySession, "localhost", 9090);
-
-        // TCP Socket server
-        if (!connect_to_debugger && SessionResult != HAPI_RESULT_SUCCESS)
-        {
-            // start our server
-            std::cout << "Starting a TCP socket server...\n";
-            HAPI_ProcessId process_id;
-            HOUDINI_CHECK_ERROR(HoudiniApi::StartThriftSocketServer(&server_options, 9090, &process_id, nullptr));
-
-            // and connect to the newly started server
-            std::cout << "Connecting to the TCP socket session...\n";
-            SessionResult = HoudiniApi::CreateThriftSocketSession(&mySession, "localhost", 9090);
-        }
+        std::cout << "Connecting to an existing HAPI TCP socket session...\n";
+        SessionResult = HoudiniApi::CreateThriftSocketSession(
+            &mySession, DEFAULT_HOST_NAME, myTcpPort);
     }
 
     if (SessionResult != HAPI_RESULT_SUCCESS)
@@ -137,7 +141,7 @@ HoudiniEngineManager::stopSession()
 }
 
 bool
-HoudiniEngineManager::restartSession(SessionType session_type, bool connect_to_debugger, bool use_cooking_thread)
+HoudiniEngineManager::restartSession(SessionType session_type, bool use_cooking_thread)
 {
     HAPI_Session* SessionPtr = &mySession;
 
@@ -147,7 +151,7 @@ HoudiniEngineManager::restartSession(SessionType session_type, bool connect_to_d
     bool bSuccess = false;
     stopSession();
 
-    if (!startSession(session_type, connect_to_debugger, use_cooking_thread))
+    if (!startSession(session_type, use_cooking_thread, myNamedPipe, myTcpPort))
     {
         std::cout << "Failed to restart the Houdini Engine session - Failed to start the new Session" << std::endl;
     }
@@ -208,12 +212,12 @@ HoudiniEngineManager::initializeHAPI(bool use_cooking_thread)
 
         if (Result == HAPI_RESULT_SUCCESS)
         {
-            std::cout << "Successfully intialized Houdini Engine." << std::endl;
+            std::cout << "Successfully initialized Houdini Engine." << std::endl;
         }
         else if (Result == HAPI_RESULT_ALREADY_INITIALIZED)
         {
             // Reused session? just notify the user
-            std::cout << "Successfully intialized Houdini Engine - HAPI was already initialzed." << std::endl;
+            std::cout << "Successfully initialized Houdini Engine - HAPI was already initialized." << std::endl;
         }
         else
         {
