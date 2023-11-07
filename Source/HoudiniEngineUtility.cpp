@@ -110,9 +110,6 @@ HoudiniEngineUtility::getString(const HAPI_Session * session, HAPI_StringHandle 
 bool
 HoudiniEngineUtility::saveToHip(const HAPI_Session * session, const std::string& filename)
 {
-    // Saving to the current directory
-    std::string filepath = "./" + filename;
-
-    HAPI_Result result = HoudiniApi::SaveHIPFile(session, filepath.c_str(), /*lock_nodes=*/false);
+    HAPI_Result result = HoudiniApi::SaveHIPFile(session, filename.c_str(), /*lock_nodes=*/false);
     return result == HAPI_RESULT_SUCCESS;
 }
