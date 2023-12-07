@@ -57,7 +57,7 @@ This will place an executable named `HoudiniEngineSample.exe` in the project's `
 
 ### Version Compatibility
 
-The HoudiniEngineSample application is compatible with HAPI version 5.0. For more details please see: https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
+The HoudiniEngineSample application is compatible with HAPI version 6.0. For more details please see: https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
 
 ### More Resources
 
