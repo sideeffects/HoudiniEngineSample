@@ -260,13 +260,14 @@ HoudiniEngineManager::getCookOptions()
 }
 
 bool 
-HoudiniEngineManager::loadAsset(const char* otl_path, HAPI_AssetLibraryId& asset_library_id, std::string& asset_name)
+HoudiniEngineManager::loadAsset(const char* otl_path, std::string& asset_name)
 {
     if (!getSession())
         return false;
 
     // Load the library from file
-    std::cout << "Loading asset..." << std::endl;
+    std::cout << "\nLoading asset..." << std::endl;
+    HAPI_AssetLibraryId asset_library_id = -1;
     HOUDINI_CHECK_ERROR_RETURN(
         HoudiniApi::LoadAssetLibraryFromFile(getSession(), otl_path, false, &asset_library_id), false); 
 
@@ -275,7 +276,7 @@ HoudiniEngineManager::loadAsset(const char* otl_path, HAPI_AssetLibraryId& asset
     if (asset_count > 1)
     {
         std::cout << "Should only be loading 1 asset here" << std::endl;
-        exit (1);
+        return false;
     }
 
     HAPI_StringHandle assetSH;
@@ -291,7 +292,7 @@ HoudiniEngineManager::createAndCookNode(const char* operator_name, HAPI_NodeId *
 {
     std::cout << "\nCreating and cooking node: " << operator_name << "..." << std::endl;
     HOUDINI_CHECK_ERROR_RETURN(
-        HoudiniApi::CreateNode(getSession(), -1, operator_name, "hexagona_lite", false, node_id), false);
+        HoudiniApi::CreateNode(getSession(), -1, operator_name, "sample_HDA", false, node_id), false);
 
     HOUDINI_CHECK_ERROR_RETURN(
         HoudiniApi::CookNode(getSession(), *node_id, getCookOptions()), false);

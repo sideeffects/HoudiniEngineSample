@@ -192,10 +192,10 @@ class HoudiniEngineManager(object):
             use_cooking_thread,
             -1,                     # cooking_thread_stack_size
             "",                     # houdini_environment_files
-            None,                   # otl_search_path
-            None,                   # dso_search_path
-            None,                   # image_dso_search_path
-            None                    # audio_dso_search_path
+            "",                     # otl_search_path
+            "",                     # dso_search_path
+            "",                     # image_dso_search_path
+            ""                      # audio_dso_search_path
         )
 
         if not success:
@@ -217,7 +217,7 @@ class HoudiniEngineManager(object):
         '''Load a new HDA asset'''
 
         if self.getSession() is None:
-            return False
+            return False, ""
 
         # Load the library from file
         print("Loading asset...")
@@ -229,7 +229,7 @@ class HoudiniEngineManager(object):
 
         if asset_count > 1:
             print("Should only be loading 1 asset here")
-            return
+            return False, ""
 
         asset_names_array = hapi.getAvailableAssets(
             self.session, asset_library_id, asset_count)
@@ -237,7 +237,7 @@ class HoudiniEngineManager(object):
             self.session, asset_names_array[0])
 
         print("  Loaded: {}".format(asset_name))
-        return asset_name
+        return True, asset_name
 
     def _waitForCook(self):
         if self.session is None:
@@ -259,7 +259,7 @@ class HoudiniEngineManager(object):
 
         print("\nCreating and cooking node: {}...".format(operator_name))
         node_id = hapi.createNode(
-            self.session, -1, operator_name, "hexagona_lite", False)
+            self.session, -1, operator_name, "sample_HDA", False)
 
         hapi.cookNode(self.session, node_id, self.cook_options)
 

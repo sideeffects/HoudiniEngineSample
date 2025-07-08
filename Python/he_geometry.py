@@ -28,7 +28,7 @@ import hapi
 class HoudiniEngineGeometry(object):
 
     @staticmethod
-    def sendGeometryToHoudini(session, cook_options):
+    def sendGeometryToHoudini(session):
         '''Marshal a mesh (with position, colour, normal and uv data) to Houdini as input'''
 
         print("\nCreating geometry input node 'input_Cube'...")

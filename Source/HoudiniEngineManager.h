@@ -70,7 +70,7 @@ public:
 	HAPI_CookOptions* getCookOptions();
 
 	// Load a new HDA asset
-	bool loadAsset(const char* otl_path, HAPI_AssetLibraryId& asset_library_id, std::string& asset_name);
+	bool loadAsset(const char* otl_path, std::string& asset_name);
 
 	// Instantiate and asynchronously cook the given node
 	bool createAndCookNode(const char* operator_name, HAPI_NodeId * node_id);

@@ -39,7 +39,8 @@ printCommandMenu()
     std::cout << "\nHoudini Engine Sample Commands" << std::endl;
     std::cout << "------------------------------" << std::endl;
     std::cout << "Working with HDAs" << std::endl;
-    std::cout << "  - cook: Create & cook the hexagona sample HDA" << std::endl;
+    std::cout << "  - load: Load a Houdini Digital Asset (HDA)" << std::endl;
+    std::cout << "  - cook: Create & cook the loaded HDA" << std::endl;
     std::cout << "  - parms: Fetch and print node parameters" << std::endl;
     std::cout << "  - attribs: Fetch and print node attributes" << std::endl;
     std::cout << "Working with Geometry" << std::endl;
@@ -130,22 +131,14 @@ main(int argc, char ** argv)
         return 1;
     }
 
-    std::cout << "\nLoading the hexagona sample HDA: " << std::endl;
-    
-    std::string otl_path = HDA_INSTALL_PATH + std::string("/hexagona_lite.hda");
-    HAPI_AssetLibraryId asset_id = -1;
-    std::string asset_name;
-    if (!he_manager->loadAsset(otl_path.c_str(), asset_id, asset_name))
-    {
-        std::cerr << "Failed to load the default HDA (" << otl_path << ")." << std::endl;
-        return 1;
-    }
-
     std::string user_cmd;
 
-    bool hexagona_cook = false;
-    HAPI_NodeId hexagona_node_id = 0;
-    HAPI_PartId hexagona_part_id = 0;
+    bool hda_loaded = false;
+    std::string asset_name;
+
+    bool hda_cooked = false;
+    HAPI_NodeId hda_node_id = 0;
+    HAPI_PartId hda_part_id = 0;
 
     bool mesh_data_generated = false;
     HAPI_NodeId input_mesh_node_id = 0;
@@ -156,25 +149,51 @@ main(int argc, char ** argv)
         std::cout << ">> ";
         std::cin >> user_cmd;
 
-        if (user_cmd == "cook")
+        if (user_cmd == "load")
         {
-            hexagona_cook = he_manager->createAndCookNode(asset_name.c_str(), &hexagona_node_id);
+            std::cout << "\nEnter an absolute path to the HDA to load "
+                            "(or press enter to load the Hexagona HDA): " << std::endl;
+            std::cout << ">> ";
+
+            std::string otl_path;
+            std::cin.ignore(); // Ignore the trailing newline character
+            std::getline(std::cin, otl_path);
+            if (otl_path.empty())
+            {
+                std::cout << "\nLoading the hexagona sample HDA: " << std::endl;
+                otl_path = HDA_INSTALL_PATH + std::string("/hexagona_lite.hda");
+            }
+            
+            hda_loaded = he_manager->loadAsset(otl_path.c_str(), asset_name);
+            if (!hda_loaded)
+            {
+                std::cerr << "Failed to load the HDA (" << otl_path << ")." << std::endl;
+                return 1;
+            }
+        }
+        else if (user_cmd == "cook")
+        {
+            if (hda_loaded)
+                hda_cooked = he_manager->createAndCookNode(asset_name.c_str(), &hda_node_id);
+            else
+                std::cerr << "\nThe sample HDA must be loaded before "
+                                "it can be cooked (cmd load)." << std::endl;
         }
         else if (user_cmd == "parms")
         {
-            if (hexagona_cook)
-                he_manager->getParameters(hexagona_node_id);
+            if (hda_loaded && hda_cooked)
+                he_manager->getParameters(hda_node_id);
             else
-                std::cerr << "\nThe hexagona sample HDA must be cooked before "
-                             "you can query its parameters (cmd cook)." << std::endl;
+                std::cerr << "\nThe sample HDA must be loaded and cooked before "
+                            "you can query its parameters (cmd load, cmd cook)." << std::endl;
         }
         else if (user_cmd == "attribs")
         {
-            if (hexagona_cook)
-                he_manager->getAttributes(hexagona_node_id, hexagona_part_id);
+            if (hda_loaded && hda_cooked)
+                he_manager->getAttributes(hda_node_id, hda_part_id);
             else
-                std::cerr << "\nThe hexagona sample HDA must be cooked before "
-                             "you can query its attributes (cmd cook)." << std::endl;
+                std::cerr << "\nThe sample HDA must be loaded and cooked before "
+                             "you can query its attributes (cmd load, cmd cook)." << std::endl;
         }
         else if (user_cmd == "setgeo")
         {

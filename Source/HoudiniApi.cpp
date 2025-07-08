@@ -1,5 +1,5 @@
 /*
- * Copyright (c) <2024> Side Effects Software Inc. *
+ * Copyright (c) <2025> Side Effects Software Inc. *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -209,6 +209,12 @@ HoudiniApi::GetAssetDefinitionParmCounts = &HoudiniApi::GetAssetDefinitionParmCo
 
 HoudiniApi::GetAssetDefinitionParmInfosFuncPtr
 HoudiniApi::GetAssetDefinitionParmInfos = &HoudiniApi::GetAssetDefinitionParmInfosEmptyStub;
+
+HoudiniApi::GetAssetDefinitionParmTagNameFuncPtr
+HoudiniApi::GetAssetDefinitionParmTagName = &HoudiniApi::GetAssetDefinitionParmTagNameEmptyStub;
+
+HoudiniApi::GetAssetDefinitionParmTagValueFuncPtr
+HoudiniApi::GetAssetDefinitionParmTagValue = &HoudiniApi::GetAssetDefinitionParmTagValueEmptyStub;
 
 HoudiniApi::GetAssetDefinitionParmValuesFuncPtr
 HoudiniApi::GetAssetDefinitionParmValues = &HoudiniApi::GetAssetDefinitionParmValuesEmptyStub;
@@ -1390,6 +1396,8 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::GetActiveCacheNames = (GetActiveCacheNamesFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetActiveCacheNames");
 	HoudiniApi::GetAssetDefinitionParmCounts = (GetAssetDefinitionParmCountsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetDefinitionParmCounts");
 	HoudiniApi::GetAssetDefinitionParmInfos = (GetAssetDefinitionParmInfosFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetDefinitionParmInfos");
+	HoudiniApi::GetAssetDefinitionParmTagName = (GetAssetDefinitionParmTagNameFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetDefinitionParmTagName");
+	HoudiniApi::GetAssetDefinitionParmTagValue = (GetAssetDefinitionParmTagValueFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetDefinitionParmTagValue");
 	HoudiniApi::GetAssetDefinitionParmValues = (GetAssetDefinitionParmValuesFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetDefinitionParmValues");
 	HoudiniApi::GetAssetInfo = (GetAssetInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetInfo");
 	HoudiniApi::GetAssetLibraryFilePath = (GetAssetLibraryFilePathFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAssetLibraryFilePath");
@@ -1828,6 +1836,8 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::GetActiveCacheNames = &HoudiniApi::GetActiveCacheNamesEmptyStub;
 	HoudiniApi::GetAssetDefinitionParmCounts = &HoudiniApi::GetAssetDefinitionParmCountsEmptyStub;
 	HoudiniApi::GetAssetDefinitionParmInfos = &HoudiniApi::GetAssetDefinitionParmInfosEmptyStub;
+	HoudiniApi::GetAssetDefinitionParmTagName = &HoudiniApi::GetAssetDefinitionParmTagNameEmptyStub;
+	HoudiniApi::GetAssetDefinitionParmTagValue = &HoudiniApi::GetAssetDefinitionParmTagValueEmptyStub;
 	HoudiniApi::GetAssetDefinitionParmValues = &HoudiniApi::GetAssetDefinitionParmValuesEmptyStub;
 	HoudiniApi::GetAssetInfo = &HoudiniApi::GetAssetInfoEmptyStub;
 	HoudiniApi::GetAssetLibraryFilePath = &HoudiniApi::GetAssetLibraryFilePathEmptyStub;
@@ -2631,6 +2641,20 @@ HoudiniApi::GetAssetDefinitionParmCountsEmptyStub(const HAPI_Session * session, 
 
 HAPI_Result
 HoudiniApi::GetAssetDefinitionParmInfosEmptyStub(const HAPI_Session * session, HAPI_AssetLibraryId library_id, const char * asset_name, HAPI_ParmInfo * parm_infos_array, int start, int length)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::GetAssetDefinitionParmTagNameEmptyStub(const HAPI_Session * session, HAPI_AssetLibraryId library_id, const char * asset_name, HAPI_ParmId parm_id, int tag_index, HAPI_StringHandle * tag_name)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::GetAssetDefinitionParmTagValueEmptyStub(const HAPI_Session * session, HAPI_AssetLibraryId library_id, const char * asset_name, HAPI_ParmId parm_id, const char * tag_name, HAPI_StringHandle * tag_value)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -3575,7 +3599,7 @@ HoudiniApi::GetPresetCountEmptyStub(const HAPI_Session * session, const char * b
 
 
 HAPI_Result
-HoudiniApi::GetPresetNamesEmptyStub(const HAPI_Session * session, const char * buffer, int buffer_length, HAPI_StringHandle * preset_names_array, int count)
+HoudiniApi::GetPresetNamesEmptyStub(const HAPI_Session * session, const char * buffer, int buffer_length, HAPI_StringHandle * preset_names_array, int preset_names_count)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -5136,7 +5160,7 @@ HoudiniApi::StartThriftSocketServerEmptyStub(const HAPI_ThriftServerOptions * op
 
 
 HAPI_Result
-HoudiniApi::StopPerformanceMonitorProfileEmptyStub(const HAPI_Session *session, int profile_id, const char * file_path)
+HoudiniApi::StopPerformanceMonitorProfileEmptyStub(const HAPI_Session * session, int profile_id, const char * file_path)
 {
 	return HAPI_RESULT_FAILURE;
 }
