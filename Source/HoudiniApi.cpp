@@ -123,6 +123,9 @@ HoudiniApi::CookPDG = &HoudiniApi::CookPDGEmptyStub;
 HoudiniApi::CookPDGAllOutputsFuncPtr
 HoudiniApi::CookPDGAllOutputs = &HoudiniApi::CookPDGAllOutputsEmptyStub;
 
+HoudiniApi::CreateCOPImageFuncPtr
+HoudiniApi::CreateCOPImage = &HoudiniApi::CreateCOPImageEmptyStub;
+
 HoudiniApi::CreateCustomSessionFuncPtr
 HoudiniApi::CreateCustomSession = &HoudiniApi::CreateCustomSessionEmptyStub;
 
@@ -930,6 +933,9 @@ HoudiniApi::RemoveParmExpression = &HoudiniApi::RemoveParmExpressionEmptyStub;
 HoudiniApi::RenameNodeFuncPtr
 HoudiniApi::RenameNode = &HoudiniApi::RenameNodeEmptyStub;
 
+HoudiniApi::RenderCOPOutputToImageFuncPtr
+HoudiniApi::RenderCOPOutputToImage = &HoudiniApi::RenderCOPOutputToImageEmptyStub;
+
 HoudiniApi::RenderCOPToImageFuncPtr
 HoudiniApi::RenderCOPToImage = &HoudiniApi::RenderCOPToImageEmptyStub;
 
@@ -1367,6 +1373,7 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::CookOptions_Init = (CookOptions_InitFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CookOptions_Init");
 	HoudiniApi::CookPDG = (CookPDGFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CookPDG");
 	HoudiniApi::CookPDGAllOutputs = (CookPDGAllOutputsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CookPDGAllOutputs");
+	HoudiniApi::CreateCOPImage = (CreateCOPImageFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateCOPImage");
 	HoudiniApi::CreateCustomSession = (CreateCustomSessionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateCustomSession");
 	HoudiniApi::CreateHeightFieldInput = (CreateHeightFieldInputFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateHeightFieldInput");
 	HoudiniApi::CreateHeightfieldInputVolumeNode = (CreateHeightfieldInputVolumeNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateHeightfieldInputVolumeNode");
@@ -1636,6 +1643,7 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::RemoveMultiparmInstance = (RemoveMultiparmInstanceFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RemoveMultiparmInstance");
 	HoudiniApi::RemoveParmExpression = (RemoveParmExpressionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RemoveParmExpression");
 	HoudiniApi::RenameNode = (RenameNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RenameNode");
+	HoudiniApi::RenderCOPOutputToImage = (RenderCOPOutputToImageFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RenderCOPOutputToImage");
 	HoudiniApi::RenderCOPToImage = (RenderCOPToImageFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RenderCOPToImage");
 	HoudiniApi::RenderTextureToImage = (RenderTextureToImageFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_RenderTextureToImage");
 	HoudiniApi::ResetSimulation = (ResetSimulationFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_ResetSimulation");
@@ -1807,6 +1815,7 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::CookOptions_Init = &HoudiniApi::CookOptions_InitEmptyStub;
 	HoudiniApi::CookPDG = &HoudiniApi::CookPDGEmptyStub;
 	HoudiniApi::CookPDGAllOutputs = &HoudiniApi::CookPDGAllOutputsEmptyStub;
+	HoudiniApi::CreateCOPImage = &HoudiniApi::CreateCOPImageEmptyStub;
 	HoudiniApi::CreateCustomSession = &HoudiniApi::CreateCustomSessionEmptyStub;
 	HoudiniApi::CreateHeightFieldInput = &HoudiniApi::CreateHeightFieldInputEmptyStub;
 	HoudiniApi::CreateHeightfieldInputVolumeNode = &HoudiniApi::CreateHeightfieldInputVolumeNodeEmptyStub;
@@ -2076,6 +2085,7 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::RemoveMultiparmInstance = &HoudiniApi::RemoveMultiparmInstanceEmptyStub;
 	HoudiniApi::RemoveParmExpression = &HoudiniApi::RemoveParmExpressionEmptyStub;
 	HoudiniApi::RenameNode = &HoudiniApi::RenameNodeEmptyStub;
+	HoudiniApi::RenderCOPOutputToImage = &HoudiniApi::RenderCOPOutputToImageEmptyStub;
 	HoudiniApi::RenderCOPToImage = &HoudiniApi::RenderCOPToImageEmptyStub;
 	HoudiniApi::RenderTextureToImage = &HoudiniApi::RenderTextureToImageEmptyStub;
 	HoudiniApi::ResetSimulation = &HoudiniApi::ResetSimulationEmptyStub;
@@ -2438,6 +2448,13 @@ HoudiniApi::CookPDGEmptyStub(const HAPI_Session * session, HAPI_NodeId cook_node
 
 HAPI_Result
 HoudiniApi::CookPDGAllOutputsEmptyStub(const HAPI_Session* session, HAPI_NodeId cook_node_id, int generate_only, int blocking)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::CreateCOPImageEmptyStub(const HAPI_Session * session, HAPI_NodeId parent_node_id, const int width, const int height, const HAPI_ImagePacking packing, HAPI_Bool flip_x, HAPI_Bool flip_y, const float * data_array, int start, int length)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -3718,7 +3735,7 @@ HoudiniApi::GetSupportedImageFileFormatsEmptyStub(const HAPI_Session * session, 
 
 
 HAPI_Result
-HoudiniApi::GetTimeEmptyStub(const HAPI_Session * session, float * time)
+HoudiniApi::GetTimeEmptyStub(const HAPI_Session * session, double * time)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -4321,6 +4338,13 @@ HoudiniApi::RemoveParmExpressionEmptyStub(const HAPI_Session * session, HAPI_Nod
 
 HAPI_Result
 HoudiniApi::RenameNodeEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, const char * new_name)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::RenderCOPOutputToImageEmptyStub(const HAPI_Session * session, HAPI_NodeId cop_node_id, const char * cop_output_name)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -5006,7 +5030,7 @@ HoudiniApi::SetSessionSyncInfoEmptyStub(const HAPI_Session * session, const HAPI
 
 
 HAPI_Result
-HoudiniApi::SetTimeEmptyStub(const HAPI_Session * session, float time)
+HoudiniApi::SetTimeEmptyStub(const HAPI_Session * session, double time)
 {
 	return HAPI_RESULT_FAILURE;
 }
