@@ -26,16 +26,18 @@
 
 #include "HoudiniApi.h"
 #include "HoudiniEngineManager.h"
+#include "HoudiniEnginePDG.h"
 #include "HoudiniEngineUtility.h"
 
 #include <iostream>
 #include <vector>
 
-HoudiniEngineManager::HoudiniEngineManager() : mySession{}, myCookOptions{}
+HoudiniEngineManager::HoudiniEngineManager()
+    : mySession{}, myCookOptions{}
 {
 }
 
-bool 
+bool
 HoudiniEngineManager::startSession(SessionType session_type,
                                    const std::string& named_pipe,
                                    int tcp_port,
@@ -297,7 +299,7 @@ HoudiniEngineManager::createAndCookNode(const char* operator_name, HAPI_NodeId *
     HOUDINI_CHECK_ERROR_RETURN(
         HoudiniApi::CookNode(getSession(), *node_id, getCookOptions()), false);
     
-    if(waitForCook())
+    if (waitForCook())
     {
         std::cout << "Cook complete." << std::endl;
     }
@@ -332,12 +334,12 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
     HAPI_NodeInfo node_info;
     HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetNodeInfo(getSession(), node_id, &node_info), false);
     
-    HAPI_ParmInfo * parm_infos = new HAPI_ParmInfo[node_info.parmCount];
+    std::vector<HAPI_ParmInfo> parm_infos(node_info.parmCount);
     HOUDINI_CHECK_ERROR_RETURN(
         HoudiniApi::GetParameters(
             getSession(), 
             node_id, 
-            parm_infos, 
+            parm_infos.data(), 
             0,
             node_info.parmCount
         ), false);
@@ -353,12 +355,12 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
         if (HoudiniApi::ParmInfo_IsInt(&parm_infos[i]))
         {
             int parm_int_count = HoudiniApi::ParmInfo_GetIntValueCount(&parm_infos[i]);
-            int * parm_int_values = new int[parm_int_count];
+            std::vector<int> parm_int_values(parm_int_count);
         
             HOUDINI_CHECK_ERROR_RETURN(
                 HoudiniApi::GetParmIntValues(
                     getSession(),
-                    node_id, parm_int_values,
+                    node_id, parm_int_values.data(),
                     parm_infos[i].intValuesIndex,
                     parm_int_count
                 ), false);
@@ -369,18 +371,16 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
                     std::cout << ", ";
                 std::cout << parm_int_values[v];
             }
-        
-            delete [] parm_int_values;
         }
         else if (HoudiniApi::ParmInfo_IsFloat(&parm_infos[i]))
         {
             int parm_float_count = HoudiniApi::ParmInfo_GetFloatValueCount(&parm_infos[i]);
-            float * parm_float_values = new float[parm_float_count];
+            std::vector<float> parm_float_values(parm_float_count);
         
             HOUDINI_CHECK_ERROR_RETURN(
                 HoudiniApi::GetParmFloatValues(
                     getSession(),
-                    node_id, parm_float_values,
+                    node_id, parm_float_values.data(),
                     parm_infos[i].floatValuesIndex,
                     parm_float_count
                 ), false);
@@ -391,19 +391,17 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
                     std::cout << ", ";
                 std::cout << parm_float_values[v];
             }
-        
-            delete [] parm_float_values;
         }
         else if (HoudiniApi::ParmInfo_IsString(&parm_infos[i]))
         {
             int parm_string_count = HoudiniApi::ParmInfo_GetStringValueCount(&parm_infos[i]);
-            HAPI_StringHandle * parmSH_values = new HAPI_StringHandle[parm_string_count];
+            std::vector<HAPI_StringHandle> parmSH_values(parm_string_count);
     
             HOUDINI_CHECK_ERROR_RETURN(
                 HoudiniApi::GetParmStringValues(
                     getSession(),
                     node_id,
-                    true, parmSH_values,
+                    true, parmSH_values.data(),
                     parm_infos[ i ].stringValuesIndex,
                     parm_string_count
                 ), false);
@@ -415,11 +413,9 @@ HoudiniEngineManager::getParameters(HAPI_NodeId node_id)
         
                 std::cout << HoudiniEngineUtility::getString(getSession(), parmSH_values[v]);
             }
-            delete [] parmSH_values;
         }
         std::cout << ")" << std::endl;
     }
-    delete [] parm_infos;
 
     return true;
 }
@@ -515,7 +511,7 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
             getSession(),
             node_id, part_id, 
             HAPI_ATTROWNER_PRIM, 
-            prim_attr_nameSH.data(), 
+            prim_attr_nameSH.data(),
             prim_attr_count
         ), false);
 
@@ -559,6 +555,55 @@ HoudiniEngineManager::getAttributes(HAPI_NodeId node_id, HAPI_PartId part_id)
         std::string attr_name = HoudiniEngineUtility::getString(getSession(), detail_attr_nameSH[i]);
         std::cout << "  " << attr_name << std::endl;
     };
+
+    return true;
+}
+
+bool
+HoudiniEngineManager::printAllNodes(HAPI_NodeId node_id)
+{
+    if (node_id)
+    {
+        std::cout << "No nodes" << std::endl;
+        return true;
+    }
+
+    int ChildCount = 0;
+
+    HOUDINI_CHECK_ERROR_RETURN(
+            HoudiniApi::ComposeChildNodeList(
+                    getSession(), node_id, HAPI_NODETYPE_ANY,
+                    HAPI_NODEFLAGS_ANY,
+                    true, // recursive
+                    &ChildCount),
+            false);
+
+    std::vector<HAPI_NodeId> ChildNodeIds;
+    ChildNodeIds.resize(ChildCount);
+
+    HOUDINI_CHECK_ERROR_RETURN(
+            HoudiniApi::GetComposedChildNodeList(
+                    getSession(), node_id, ChildNodeIds.data(), ChildCount),
+            false);
+
+    for (HAPI_NodeId NodeId : ChildNodeIds)
+    {
+        HAPI_NodeInfo NodeInfo;
+        HOUDINI_CHECK_ERROR_RETURN(
+                HoudiniApi::GetNodeInfo(getSession(), NodeId, &NodeInfo),
+                false);
+
+        HAPI_StringHandle name_handle = NodeInfo.nameSH;
+        HAPI_StringHandle path_handle = NodeInfo.internalNodePathSH;
+
+        std::string name_string = HoudiniEngineUtility::getHAPIString(
+                getSession(), name_handle);
+        std::string path_string = HoudiniEngineUtility::getHAPIString(
+                getSession(), path_handle);
+
+        std::cout << "node: " << name_string << " path: " << path_string
+                  << std::endl;
+    }
 
     return true;
 }

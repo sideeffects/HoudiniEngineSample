@@ -29,7 +29,9 @@
 #include "HoudiniEngineManager.h"
 #include "HoudiniEnginePlatform.h"
 #include "HoudiniEngineUtility.h"
+#include "HoudiniEnginePDG.h"
 
+#include <filesystem>
 #include <iostream>
 #include <string>
 
@@ -43,6 +45,9 @@ printCommandMenu()
     std::cout << "  - cook: Create & cook the loaded HDA" << std::endl;
     std::cout << "  - parms: Fetch and print node parameters" << std::endl;
     std::cout << "  - attribs: Fetch and print node attributes" << std::endl;
+    std::cout << "Working with PDG" << std::endl;
+    std::cout << "  - pdg: Cooks a PDG Top Node in the loaded HDA" << std::endl;
+    std::cout << "  - dirty: Dirty a PDG Top Node in the loaded HDA" << std::endl;
     std::cout << "Working with Geometry" << std::endl;
     std::cout << "  - setgeo: Marshal mesh data to Houdini" << std::endl;
     std::cout << "  - getgeo: Read mesh data from Houdini" << std::endl;
@@ -52,6 +57,7 @@ printCommandMenu()
     std::cout << "  - help: Print menu of commands"  << std::endl;
     std::cout << "  - save: Save the Houdini session to a hip file" << std::endl;
     std::cout << "  - quit: Cleanup and shutdown the Houdini session" << std::endl;
+    std::cout << "  - print: Prints all nodes in the loaded HDA" << std::endl;
 }
 
 int
@@ -72,7 +78,7 @@ main(int argc, char ** argv)
         std::cerr << "Failed to load and initialize the "
                      "Houdini Engine API from libHAPIL." << std::endl;
         return 1;
-    }  
+    }
 
     std::cout << "Start a new Houdini Engine Session via HARS:" << std::endl;
     std::cout << "  1: In-Process Session" << std::endl;
@@ -83,7 +89,7 @@ main(int argc, char ** argv)
     std::cout << "  5: Existing TCP Socket Session" << std::endl;
     std::cout << "  6: Existing Shared Memory Session\n" << std::endl;
     std::cout << ">> ";
-    
+
     int session_type;
     std::cin >> session_type;
 
@@ -137,22 +143,27 @@ main(int argc, char ** argv)
     std::string asset_name;
 
     bool hda_cooked = false;
-    HAPI_NodeId hda_node_id = 0;
+    HAPI_NodeId hda_node_id = -1;
     HAPI_PartId hda_part_id = 0;
+    std::string last_pdg_node_path;
 
+    bool using_default_pdg_hda = false;
     bool mesh_data_generated = false;
     HAPI_NodeId input_mesh_node_id = 0;
 
     printCommandMenu();
     while (user_cmd != "quit")
-    {   
+    {
         std::cout << ">> ";
         std::cin >> user_cmd;
 
         if (user_cmd == "load")
         {
-            std::cout << "\nEnter an absolute path to the HDA to load "
-                            "(or press enter to load the Hexagona HDA): " << std::endl;
+            using_default_pdg_hda = false;
+
+            std::cout << "\nEnter an absolute path to the HDA to load " << std::endl <<
+                            " - press enter to load the Hexagona HDA" << std::endl <<
+                            " - enter pdg to load the PDG Sample HDA" << std::endl;
             std::cout << ">> ";
 
             std::string otl_path;
@@ -163,12 +174,17 @@ main(int argc, char ** argv)
                 std::cout << "\nLoading the hexagona sample HDA: " << std::endl;
                 otl_path = HDA_INSTALL_PATH + std::string("/hexagona_lite.hda");
             }
-            
+            else if (otl_path == "pdg")
+            {
+                std::cout << "\nLoading the PDG sample HDA: " << std::endl;
+                otl_path = HDA_INSTALL_PATH + std::string("/pdg_sample.hda");
+                using_default_pdg_hda = true;
+            }
+
             hda_loaded = he_manager->loadAsset(otl_path.c_str(), asset_name);
             if (!hda_loaded)
             {
                 std::cerr << "Failed to load the HDA (" << otl_path << ")." << std::endl;
-                return 1;
             }
         }
         else if (user_cmd == "cook")
@@ -178,6 +194,101 @@ main(int argc, char ** argv)
             else
                 std::cerr << "\nThe sample HDA must be loaded before "
                                 "it can be cooked (cmd load)." << std::endl;
+        }
+        else if (user_cmd == "pdg")
+        {
+            if (hda_loaded)
+            {
+                std::string default_pdg_node = "/obj/sample_HDA/sample_HDA/topnet/output0";
+                std::cout << "\nEnter the PDG TOP Node to cook\n"
+                    " - press enter to default to " << default_pdg_node << std::endl;
+
+                std::string pdg_node;
+                std::cin.ignore(); // Ignore the trailing newline character
+                std::getline(std::cin, pdg_node);
+                if (pdg_node.empty())
+                    pdg_node = default_pdg_node;
+
+                if (!hda_cooked)
+                    hda_cooked = he_manager->createAndCookNode(asset_name.c_str(), &hda_node_id);
+
+                if (using_default_pdg_hda)
+                {
+                    // If using the sample's built in PDG sample we must set
+                    // parameters:
+                    //  hda - the path of the HDA the HDA processor node is
+                    //  using working_folder - temporary folder for output
+                    //  files
+
+                    std::string otl_path = HDA_INSTALL_PATH
+                                           + std::string("/pdg_noise.hda");
+
+                    bool success = HoudiniEngineUtility::setHAPIStringParm(
+                            he_manager->getSession(), hda_node_id, "hda",
+                            otl_path.c_str());
+
+                    if (!success)
+                    {
+                        std::cout << "Failed to set hda parameter" << std::endl;
+                    }
+
+                    // Use the current work directory for the temp folder.
+                    std::string cwd = std::filesystem::current_path().string()
+                                      + "/temp";
+                    success = HoudiniEngineUtility::setHAPIStringParm(
+                            he_manager->getSession(), hda_node_id,
+                            "working_folder", cwd.c_str());
+
+                    if (!success)
+                    {
+                        std::cout << "Failed to set working_folder parameter"
+                                  << std::endl;
+                    }
+                }
+
+                last_pdg_node_path = pdg_node;
+                HoudiniEnginePDG::cookPDGNode(
+                        he_manager->getSession(), he_manager->getCookOptions(), hda_node_id, pdg_node.c_str());
+            }
+            else
+            {
+                std::cerr << "PDG sample HDA must be loaded before "
+                             "it can run PDG (cmd load)."
+                          << std::endl;
+            }
+        }
+        else if (user_cmd == "dirty")
+        {
+            if (hda_loaded)
+            {
+                std::string default_pdg_node = last_pdg_node_path.empty()
+                    ? "/obj/sample_HDA/sample_HDA/topnet/output0"
+                    : last_pdg_node_path;
+
+                std::cout << "\nEnter the PDG TOP Node to dirty\n"
+                    << " - press enter to default to " << default_pdg_node << std::endl;
+                std::cout << ">> ";
+
+                std::string pdg_node;
+                std::cin.ignore();
+                std::getline(std::cin, pdg_node);
+                if (pdg_node.empty())
+                    pdg_node = default_pdg_node;
+
+                last_pdg_node_path = pdg_node;
+                if (!HoudiniEnginePDG::dirtyPDGNode(
+                            he_manager->getSession(), pdg_node.c_str(), true))
+                    std::cerr << "Failed to dirty PDG node: " << pdg_node << std::endl;
+            }
+            else
+            {
+                std::cerr << "\nThe sample HDA must be loaded before "
+                    "you can dirty a PDG node (cmd load)." << std::endl;
+            }
+        }
+        else if (user_cmd == "print")
+        {
+            he_manager->printAllNodes(hda_node_id);
         }
         else if (user_cmd == "parms")
         {
@@ -204,7 +315,7 @@ main(int argc, char ** argv)
         {
             if (mesh_data_generated)
                 HoudiniEngineGeometry::readGeometryFromHoudini(
-                    he_manager->getSession(), 
+                    he_manager->getSession(),
                     input_mesh_node_id,
                     he_manager->getCookOptions()
                 );
@@ -215,7 +326,7 @@ main(int argc, char ** argv)
         else if (user_cmd == "checkvalid")
         {
             HAPI_Session* session = he_manager->getSession();
-            
+
             if (!session)
             {
                 std::cerr << "No session exists." << std::endl;
@@ -247,7 +358,7 @@ main(int argc, char ** argv)
             std::cout << "\nFilename (.hip) to save the session to: ";
             std::cin >> filename;
             bool success = HoudiniEngineUtility::saveToHip(he_manager->getSession(), filename);
-            
+
             if (success)
                 std::cout << "Hip file saved successfully." << std::endl;
             else

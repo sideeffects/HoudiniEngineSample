@@ -54,10 +54,12 @@ This will place an executable named `HoudiniEngineSample.exe` in the project's `
 * HoudiniEnginePlatform - Contains OS-specific code for loading the libHAPIL library
 * HoudiniApi - This file is generated (do not modify directly). Initializes the HAPI API with functions exported from libHAPIL.
 * HDA/hexagona_lite.hda - Sample HDA for generating hexagonal terrain (provided by [@christosstavridis](https://github.com/christosstavridis))
+* HDA/pdg_sample.hda - Sample HDA for PDG generation.
+* HDA/pdg_noise.hda - External HDA executed by pdg_sample.hda
 
 ### Version Compatibility
 
-The HoudiniEngineSample application is compatible with HAPI version 8.0. For more details please see: https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
+The HoudiniEngineSample application is compatible with HAPI version 9.0. For more details please see: https://www.sidefx.com/docs/hengine/_h_a_p_i__migration.html
 
 ### HoudiniEngineSample for Python
 

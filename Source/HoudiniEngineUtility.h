@@ -88,4 +88,10 @@ public:
 
 	// Save the session to a .hip file in the application directory
 	static bool saveToHip(const HAPI_Session* session, const std::string& filename);
+
+    // Fetches a HAPI string from a string handle
+    static std::string getHAPIString(const HAPI_Session* session, HAPI_StringHandle string_handle);
+
+    // Sets a string parameter on the HDA node
+    static bool setHAPIStringParm(HAPI_Session* session, HAPI_NodeId node_id, const char* parm_name, const char* value);
 };

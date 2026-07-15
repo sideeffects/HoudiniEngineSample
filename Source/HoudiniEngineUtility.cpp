@@ -29,7 +29,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 
 std::string 
 HoudiniEngineUtility::getLastError(HAPI_Session* session)
@@ -44,10 +44,9 @@ HoudiniEngineUtility::getLastError(HAPI_Session* session)
     if (buffer_length <= 0)
         return std::string("");
 
-    char * buffer = new char[buffer_length];
-    HoudiniApi::GetStatusString(session, HAPI_STATUS_CALL_RESULT, buffer, buffer_length);
-    std::string result(buffer);
-    delete[] buffer;
+    std::vector<char> buffer(buffer_length, '\0');
+    HoudiniApi::GetStatusString(session, HAPI_STATUS_CALL_RESULT, buffer.data(), buffer_length);
+    std::string result(buffer.data());
 
     return result;
 }
@@ -65,10 +64,9 @@ HoudiniEngineUtility::getLastCookError(HAPI_Session* session)
     if (buffer_length <= 0)
         return std::string("");
 
-    char * buffer = new char[buffer_length];
-    HoudiniApi::GetStatusString(session, HAPI_STATUS_COOK_RESULT, buffer, buffer_length);
-    std::string result(buffer);
-    delete[] buffer;
+    std::vector<char> buffer(buffer_length, '\0');
+    HoudiniApi::GetStatusString(session, HAPI_STATUS_COOK_RESULT, buffer.data(), buffer_length);
+    std::string result(buffer.data());
     
     return result;
 }
@@ -83,11 +81,10 @@ HoudiniEngineUtility::getConnectionError()
     if (buffer_length <= 0)
         return std::string("");
 
-    char* buffer = new char[buffer_length];
-    HoudiniApi::GetConnectionError(buffer, buffer_length, true);
+    std::vector<char> buffer(buffer_length, '\0');
+    HoudiniApi::GetConnectionError(buffer.data(), buffer_length, true);
 
-    std::string result(buffer);
-    delete[] buffer;
+    std::string result(buffer.data());
 
     return result;
 }
@@ -98,11 +95,10 @@ HoudiniEngineUtility::getString(const HAPI_Session * session, HAPI_StringHandle 
     int length = 0;
     HoudiniApi::GetStringBufLength(session, string_handle, &length);
 
-    char * buffer = new char[length + 1];
-    HoudiniApi::GetString(session, string_handle, buffer, length);
+    std::vector<char> buffer(length + 1, '\0');
+    HoudiniApi::GetString(session, string_handle, buffer.data(), length);
 
-    std::string result(buffer);
-    delete [] buffer;
+    std::string result(buffer.data());
     return result;
 }
 
@@ -112,4 +108,53 @@ HoudiniEngineUtility::saveToHip(const HAPI_Session * session, const std::string&
 {
     HAPI_Result result = HoudiniApi::SaveHIPFile(session, filename.c_str(), /*lock_nodes=*/false);
     return result == HAPI_RESULT_SUCCESS;
+}
+
+std::string
+HoudiniEngineUtility::getHAPIString(const HAPI_Session* session, HAPI_StringHandle string_handle)
+{
+    if (string_handle < 0)
+        return "<empty>";
+
+    int buffer_length = 0;
+
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetStringBufLength(
+        session,
+        string_handle,
+        &buffer_length), false);
+
+    std::vector<char> buffer(buffer_length, '\0');
+
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetString(
+        session,
+        string_handle,
+        buffer.data(),
+        buffer_length), false);
+
+    return std::string(buffer.data());
+}
+
+bool
+HoudiniEngineUtility::setHAPIStringParm(HAPI_Session* session, HAPI_NodeId node_id, const char* parm_name, const char* value)
+{
+    HAPI_ParmInfo parmInfo{};
+
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::GetParmInfoFromName(session, node_id, parm_name, &parmInfo), false);
+
+    if (parmInfo.type != HAPI_PARMTYPE_STRING && parmInfo.type != HAPI_PARMTYPE_PATH_FILE)
+    {
+        std::cerr << "Parameter is not a string/path parameter: "
+            << parm_name << "\n";
+        return false;
+    }
+
+    HOUDINI_CHECK_ERROR_RETURN(HoudiniApi::SetParmStringValue(
+        session,
+        node_id,
+        value,
+        parmInfo.id,
+        0),  // string index, usually 0 for scalar string parms 
+        false);
+
+    return true;
 }

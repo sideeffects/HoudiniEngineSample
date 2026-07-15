@@ -1,5 +1,5 @@
 /*
- * Copyright (c) <2025> Side Effects Software Inc. *
+ * Copyright (c) <2026> Side Effects Software Inc. *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -48,6 +48,12 @@ HoudiniApi::AttributeInfo_Init = &HoudiniApi::AttributeInfo_InitEmptyStub;
 HoudiniApi::BindCustomImplementationFuncPtr
 HoudiniApi::BindCustomImplementation = &HoudiniApi::BindCustomImplementationEmptyStub;
 
+HoudiniApi::CameraInfo_CreateFuncPtr
+HoudiniApi::CameraInfo_Create = &HoudiniApi::CameraInfo_CreateEmptyStub;
+
+HoudiniApi::CameraInfo_InitFuncPtr
+HoudiniApi::CameraInfo_Init = &HoudiniApi::CameraInfo_InitEmptyStub;
+
 HoudiniApi::CancelPDGCookFuncPtr
 HoudiniApi::CancelPDGCook = &HoudiniApi::CancelPDGCookEmptyStub;
 
@@ -68,9 +74,6 @@ HoudiniApi::CommitGeo = &HoudiniApi::CommitGeoEmptyStub;
 
 HoudiniApi::CommitWorkItemsFuncPtr
 HoudiniApi::CommitWorkItems = &HoudiniApi::CommitWorkItemsEmptyStub;
-
-HoudiniApi::CommitWorkitemsFuncPtr
-HoudiniApi::CommitWorkitems = &HoudiniApi::CommitWorkitemsEmptyStub;
 
 HoudiniApi::ComposeChildNodeListFuncPtr
 HoudiniApi::ComposeChildNodeList = &HoudiniApi::ComposeChildNodeListEmptyStub;
@@ -138,6 +141,9 @@ HoudiniApi::CreateHeightfieldInputVolumeNode = &HoudiniApi::CreateHeightfieldInp
 HoudiniApi::CreateInProcessSessionFuncPtr
 HoudiniApi::CreateInProcessSession = &HoudiniApi::CreateInProcessSessionEmptyStub;
 
+HoudiniApi::CreateInputCameraNodeFuncPtr
+HoudiniApi::CreateInputCameraNode = &HoudiniApi::CreateInputCameraNodeEmptyStub;
+
 HoudiniApi::CreateInputCurveNodeFuncPtr
 HoudiniApi::CreateInputCurveNode = &HoudiniApi::CreateInputCurveNodeEmptyStub;
 
@@ -158,9 +164,6 @@ HoudiniApi::CreateThriftSocketSession = &HoudiniApi::CreateThriftSocketSessionEm
 
 HoudiniApi::CreateWorkItemFuncPtr
 HoudiniApi::CreateWorkItem = &HoudiniApi::CreateWorkItemEmptyStub;
-
-HoudiniApi::CreateWorkitemFuncPtr
-HoudiniApi::CreateWorkitem = &HoudiniApi::CreateWorkitemEmptyStub;
 
 HoudiniApi::CurveInfo_CreateFuncPtr
 HoudiniApi::CurveInfo_Create = &HoudiniApi::CurveInfo_CreateEmptyStub;
@@ -357,6 +360,12 @@ HoudiniApi::GetBoxInfo = &HoudiniApi::GetBoxInfoEmptyStub;
 HoudiniApi::GetCachePropertyFuncPtr
 HoudiniApi::GetCacheProperty = &HoudiniApi::GetCachePropertyEmptyStub;
 
+HoudiniApi::GetCameraInfoFuncPtr
+HoudiniApi::GetCameraInfo = &HoudiniApi::GetCameraInfoEmptyStub;
+
+HoudiniApi::GetCameraTransformFuncPtr
+HoudiniApi::GetCameraTransform = &HoudiniApi::GetCameraTransformEmptyStub;
+
 HoudiniApi::GetComposedChildNodeListFuncPtr
 HoudiniApi::GetComposedChildNodeList = &HoudiniApi::GetComposedChildNodeListEmptyStub;
 
@@ -377,12 +386,6 @@ HoudiniApi::GetConnectionError = &HoudiniApi::GetConnectionErrorEmptyStub;
 
 HoudiniApi::GetConnectionErrorLengthFuncPtr
 HoudiniApi::GetConnectionErrorLength = &HoudiniApi::GetConnectionErrorLengthEmptyStub;
-
-HoudiniApi::GetCookingCurrentCountFuncPtr
-HoudiniApi::GetCookingCurrentCount = &HoudiniApi::GetCookingCurrentCountEmptyStub;
-
-HoudiniApi::GetCookingTotalCountFuncPtr
-HoudiniApi::GetCookingTotalCount = &HoudiniApi::GetCookingTotalCountEmptyStub;
 
 HoudiniApi::GetCurveCountsFuncPtr
 HoudiniApi::GetCurveCounts = &HoudiniApi::GetCurveCountsEmptyStub;
@@ -524,9 +527,6 @@ HoudiniApi::GetNodePath = &HoudiniApi::GetNodePathEmptyStub;
 
 HoudiniApi::GetNumWorkItemsFuncPtr
 HoudiniApi::GetNumWorkItems = &HoudiniApi::GetNumWorkItemsEmptyStub;
-
-HoudiniApi::GetNumWorkitemsFuncPtr
-HoudiniApi::GetNumWorkitems = &HoudiniApi::GetNumWorkitemsEmptyStub;
 
 HoudiniApi::GetObjectInfoFuncPtr
 HoudiniApi::GetObjectInfo = &HoudiniApi::GetObjectInfoEmptyStub;
@@ -731,27 +731,6 @@ HoudiniApi::GetWorkItemStringAttribute = &HoudiniApi::GetWorkItemStringAttribute
 
 HoudiniApi::GetWorkItemsFuncPtr
 HoudiniApi::GetWorkItems = &HoudiniApi::GetWorkItemsEmptyStub;
-
-HoudiniApi::GetWorkitemDataLengthFuncPtr
-HoudiniApi::GetWorkitemDataLength = &HoudiniApi::GetWorkitemDataLengthEmptyStub;
-
-HoudiniApi::GetWorkitemFloatDataFuncPtr
-HoudiniApi::GetWorkitemFloatData = &HoudiniApi::GetWorkitemFloatDataEmptyStub;
-
-HoudiniApi::GetWorkitemInfoFuncPtr
-HoudiniApi::GetWorkitemInfo = &HoudiniApi::GetWorkitemInfoEmptyStub;
-
-HoudiniApi::GetWorkitemIntDataFuncPtr
-HoudiniApi::GetWorkitemIntData = &HoudiniApi::GetWorkitemIntDataEmptyStub;
-
-HoudiniApi::GetWorkitemResultInfoFuncPtr
-HoudiniApi::GetWorkitemResultInfo = &HoudiniApi::GetWorkitemResultInfoEmptyStub;
-
-HoudiniApi::GetWorkitemStringDataFuncPtr
-HoudiniApi::GetWorkitemStringData = &HoudiniApi::GetWorkitemStringDataEmptyStub;
-
-HoudiniApi::GetWorkitemsFuncPtr
-HoudiniApi::GetWorkitems = &HoudiniApi::GetWorkitemsEmptyStub;
 
 HoudiniApi::HandleBindingInfo_CreateFuncPtr
 HoudiniApi::HandleBindingInfo_Create = &HoudiniApi::HandleBindingInfo_CreateEmptyStub;
@@ -1173,6 +1152,12 @@ HoudiniApi::SetHeightFieldData = &HoudiniApi::SetHeightFieldDataEmptyStub;
 HoudiniApi::SetImageInfoFuncPtr
 HoudiniApi::SetImageInfo = &HoudiniApi::SetImageInfoEmptyStub;
 
+HoudiniApi::SetInputCameraInfoFuncPtr
+HoudiniApi::SetInputCameraInfo = &HoudiniApi::SetInputCameraInfoEmptyStub;
+
+HoudiniApi::SetInputCameraTransformFuncPtr
+HoudiniApi::SetInputCameraTransform = &HoudiniApi::SetInputCameraTransformEmptyStub;
+
 HoudiniApi::SetInputCurveInfoFuncPtr
 HoudiniApi::SetInputCurveInfo = &HoudiniApi::SetInputCurveInfoEmptyStub;
 
@@ -1269,15 +1254,6 @@ HoudiniApi::SetWorkItemIntAttribute = &HoudiniApi::SetWorkItemIntAttributeEmptyS
 HoudiniApi::SetWorkItemStringAttributeFuncPtr
 HoudiniApi::SetWorkItemStringAttribute = &HoudiniApi::SetWorkItemStringAttributeEmptyStub;
 
-HoudiniApi::SetWorkitemFloatDataFuncPtr
-HoudiniApi::SetWorkitemFloatData = &HoudiniApi::SetWorkitemFloatDataEmptyStub;
-
-HoudiniApi::SetWorkitemIntDataFuncPtr
-HoudiniApi::SetWorkitemIntData = &HoudiniApi::SetWorkitemIntDataEmptyStub;
-
-HoudiniApi::SetWorkitemStringDataFuncPtr
-HoudiniApi::SetWorkitemStringData = &HoudiniApi::SetWorkitemStringDataEmptyStub;
-
 HoudiniApi::ShutdownFuncPtr
 HoudiniApi::Shutdown = &HoudiniApi::ShutdownEmptyStub;
 
@@ -1348,6 +1324,8 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::AttributeInfo_Create = (AttributeInfo_CreateFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_AttributeInfo_Create");
 	HoudiniApi::AttributeInfo_Init = (AttributeInfo_InitFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_AttributeInfo_Init");
 	HoudiniApi::BindCustomImplementation = (BindCustomImplementationFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_BindCustomImplementation");
+	HoudiniApi::CameraInfo_Create = (CameraInfo_CreateFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CameraInfo_Create");
+	HoudiniApi::CameraInfo_Init = (CameraInfo_InitFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CameraInfo_Init");
 	HoudiniApi::CancelPDGCook = (CancelPDGCookFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CancelPDGCook");
 	HoudiniApi::CheckForSpecificErrors = (CheckForSpecificErrorsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CheckForSpecificErrors");
 	HoudiniApi::Cleanup = (CleanupFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_Cleanup");
@@ -1355,7 +1333,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::CloseSession = (CloseSessionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CloseSession");
 	HoudiniApi::CommitGeo = (CommitGeoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CommitGeo");
 	HoudiniApi::CommitWorkItems = (CommitWorkItemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CommitWorkItems");
-	HoudiniApi::CommitWorkitems = (CommitWorkitemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CommitWorkitems");
 	HoudiniApi::ComposeChildNodeList = (ComposeChildNodeListFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_ComposeChildNodeList");
 	HoudiniApi::ComposeNodeCookResult = (ComposeNodeCookResultFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_ComposeNodeCookResult");
 	HoudiniApi::ComposeObjectList = (ComposeObjectListFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_ComposeObjectList");
@@ -1378,6 +1355,7 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::CreateHeightFieldInput = (CreateHeightFieldInputFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateHeightFieldInput");
 	HoudiniApi::CreateHeightfieldInputVolumeNode = (CreateHeightfieldInputVolumeNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateHeightfieldInputVolumeNode");
 	HoudiniApi::CreateInProcessSession = (CreateInProcessSessionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateInProcessSession");
+	HoudiniApi::CreateInputCameraNode = (CreateInputCameraNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateInputCameraNode");
 	HoudiniApi::CreateInputCurveNode = (CreateInputCurveNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateInputCurveNode");
 	HoudiniApi::CreateInputNode = (CreateInputNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateInputNode");
 	HoudiniApi::CreateNode = (CreateNodeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateNode");
@@ -1385,7 +1363,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::CreateThriftSharedMemorySession = (CreateThriftSharedMemorySessionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateThriftSharedMemorySession");
 	HoudiniApi::CreateThriftSocketSession = (CreateThriftSocketSessionFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateThriftSocketSession");
 	HoudiniApi::CreateWorkItem = (CreateWorkItemFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateWorkItem");
-	HoudiniApi::CreateWorkitem = (CreateWorkitemFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CreateWorkitem");
 	HoudiniApi::CurveInfo_Create = (CurveInfo_CreateFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CurveInfo_Create");
 	HoudiniApi::CurveInfo_Init = (CurveInfo_InitFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_CurveInfo_Init");
 	HoudiniApi::DeleteAttribute = (DeleteAttributeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_DeleteAttribute");
@@ -1451,6 +1428,8 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::GetAvailableAssets = (GetAvailableAssetsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetAvailableAssets");
 	HoudiniApi::GetBoxInfo = (GetBoxInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetBoxInfo");
 	HoudiniApi::GetCacheProperty = (GetCachePropertyFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCacheProperty");
+	HoudiniApi::GetCameraInfo = (GetCameraInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCameraInfo");
+	HoudiniApi::GetCameraTransform = (GetCameraTransformFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCameraTransform");
 	HoudiniApi::GetComposedChildNodeList = (GetComposedChildNodeListFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetComposedChildNodeList");
 	HoudiniApi::GetComposedNodeCookResult = (GetComposedNodeCookResultFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetComposedNodeCookResult");
 	HoudiniApi::GetComposedObjectList = (GetComposedObjectListFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetComposedObjectList");
@@ -1458,8 +1437,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::GetCompositorOptions = (GetCompositorOptionsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCompositorOptions");
 	HoudiniApi::GetConnectionError = (GetConnectionErrorFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetConnectionError");
 	HoudiniApi::GetConnectionErrorLength = (GetConnectionErrorLengthFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetConnectionErrorLength");
-	HoudiniApi::GetCookingCurrentCount = (GetCookingCurrentCountFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCookingCurrentCount");
-	HoudiniApi::GetCookingTotalCount = (GetCookingTotalCountFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCookingTotalCount");
 	HoudiniApi::GetCurveCounts = (GetCurveCountsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCurveCounts");
 	HoudiniApi::GetCurveInfo = (GetCurveInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCurveInfo");
 	HoudiniApi::GetCurveKnots = (GetCurveKnotsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetCurveKnots");
@@ -1507,7 +1484,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::GetNodeOutputName = (GetNodeOutputNameFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetNodeOutputName");
 	HoudiniApi::GetNodePath = (GetNodePathFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetNodePath");
 	HoudiniApi::GetNumWorkItems = (GetNumWorkItemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetNumWorkItems");
-	HoudiniApi::GetNumWorkitems = (GetNumWorkitemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetNumWorkitems");
 	HoudiniApi::GetObjectInfo = (GetObjectInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetObjectInfo");
 	HoudiniApi::GetObjectTransform = (GetObjectTransformFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetObjectTransform");
 	HoudiniApi::GetOutputGeoCount = (GetOutputGeoCountFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetOutputGeoCount");
@@ -1576,13 +1552,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::GetWorkItemOutputFiles = (GetWorkItemOutputFilesFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkItemOutputFiles");
 	HoudiniApi::GetWorkItemStringAttribute = (GetWorkItemStringAttributeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkItemStringAttribute");
 	HoudiniApi::GetWorkItems = (GetWorkItemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkItems");
-	HoudiniApi::GetWorkitemDataLength = (GetWorkitemDataLengthFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemDataLength");
-	HoudiniApi::GetWorkitemFloatData = (GetWorkitemFloatDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemFloatData");
-	HoudiniApi::GetWorkitemInfo = (GetWorkitemInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemInfo");
-	HoudiniApi::GetWorkitemIntData = (GetWorkitemIntDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemIntData");
-	HoudiniApi::GetWorkitemResultInfo = (GetWorkitemResultInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemResultInfo");
-	HoudiniApi::GetWorkitemStringData = (GetWorkitemStringDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitemStringData");
-	HoudiniApi::GetWorkitems = (GetWorkitemsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_GetWorkitems");
 	HoudiniApi::HandleBindingInfo_Create = (HandleBindingInfo_CreateFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_HandleBindingInfo_Create");
 	HoudiniApi::HandleBindingInfo_Init = (HandleBindingInfo_InitFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_HandleBindingInfo_Init");
 	HoudiniApi::HandleInfo_Create = (HandleInfo_CreateFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_HandleInfo_Create");
@@ -1723,6 +1692,8 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::SetGroupMembership = (SetGroupMembershipFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetGroupMembership");
 	HoudiniApi::SetHeightFieldData = (SetHeightFieldDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetHeightFieldData");
 	HoudiniApi::SetImageInfo = (SetImageInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetImageInfo");
+	HoudiniApi::SetInputCameraInfo = (SetInputCameraInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetInputCameraInfo");
+	HoudiniApi::SetInputCameraTransform = (SetInputCameraTransformFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetInputCameraTransform");
 	HoudiniApi::SetInputCurveInfo = (SetInputCurveInfoFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetInputCurveInfo");
 	HoudiniApi::SetInputCurvePositions = (SetInputCurvePositionsFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetInputCurvePositions");
 	HoudiniApi::SetInputCurvePositionsRotationsScales = (SetInputCurvePositionsRotationsScalesFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetInputCurvePositionsRotationsScales");
@@ -1755,9 +1726,6 @@ HoudiniApi::InitializeHAPI(void* LibraryHandle)
 	HoudiniApi::SetWorkItemFloatAttribute = (SetWorkItemFloatAttributeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkItemFloatAttribute");
 	HoudiniApi::SetWorkItemIntAttribute = (SetWorkItemIntAttributeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkItemIntAttribute");
 	HoudiniApi::SetWorkItemStringAttribute = (SetWorkItemStringAttributeFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkItemStringAttribute");
-	HoudiniApi::SetWorkitemFloatData = (SetWorkitemFloatDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkitemFloatData");
-	HoudiniApi::SetWorkitemIntData = (SetWorkitemIntDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkitemIntData");
-	HoudiniApi::SetWorkitemStringData = (SetWorkitemStringDataFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_SetWorkitemStringData");
 	HoudiniApi::Shutdown = (ShutdownFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_Shutdown");
 	HoudiniApi::StartPerformanceMonitorProfile = (StartPerformanceMonitorProfileFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_StartPerformanceMonitorProfile");
 	HoudiniApi::StartThriftNamedPipeServer = (StartThriftNamedPipeServerFuncPtr) HoudiniEnginePlatform::GetDllExport(LibraryHandle, "HAPI_StartThriftNamedPipeServer");
@@ -1790,6 +1758,8 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::AttributeInfo_Create = &HoudiniApi::AttributeInfo_CreateEmptyStub;
 	HoudiniApi::AttributeInfo_Init = &HoudiniApi::AttributeInfo_InitEmptyStub;
 	HoudiniApi::BindCustomImplementation = &HoudiniApi::BindCustomImplementationEmptyStub;
+	HoudiniApi::CameraInfo_Create = &HoudiniApi::CameraInfo_CreateEmptyStub;
+	HoudiniApi::CameraInfo_Init = &HoudiniApi::CameraInfo_InitEmptyStub;
 	HoudiniApi::CancelPDGCook = &HoudiniApi::CancelPDGCookEmptyStub;
 	HoudiniApi::CheckForSpecificErrors = &HoudiniApi::CheckForSpecificErrorsEmptyStub;
 	HoudiniApi::Cleanup = &HoudiniApi::CleanupEmptyStub;
@@ -1797,7 +1767,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::CloseSession = &HoudiniApi::CloseSessionEmptyStub;
 	HoudiniApi::CommitGeo = &HoudiniApi::CommitGeoEmptyStub;
 	HoudiniApi::CommitWorkItems = &HoudiniApi::CommitWorkItemsEmptyStub;
-	HoudiniApi::CommitWorkitems = &HoudiniApi::CommitWorkitemsEmptyStub;
 	HoudiniApi::ComposeChildNodeList = &HoudiniApi::ComposeChildNodeListEmptyStub;
 	HoudiniApi::ComposeNodeCookResult = &HoudiniApi::ComposeNodeCookResultEmptyStub;
 	HoudiniApi::ComposeObjectList = &HoudiniApi::ComposeObjectListEmptyStub;
@@ -1820,6 +1789,7 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::CreateHeightFieldInput = &HoudiniApi::CreateHeightFieldInputEmptyStub;
 	HoudiniApi::CreateHeightfieldInputVolumeNode = &HoudiniApi::CreateHeightfieldInputVolumeNodeEmptyStub;
 	HoudiniApi::CreateInProcessSession = &HoudiniApi::CreateInProcessSessionEmptyStub;
+	HoudiniApi::CreateInputCameraNode = &HoudiniApi::CreateInputCameraNodeEmptyStub;
 	HoudiniApi::CreateInputCurveNode = &HoudiniApi::CreateInputCurveNodeEmptyStub;
 	HoudiniApi::CreateInputNode = &HoudiniApi::CreateInputNodeEmptyStub;
 	HoudiniApi::CreateNode = &HoudiniApi::CreateNodeEmptyStub;
@@ -1827,7 +1797,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::CreateThriftSharedMemorySession = &HoudiniApi::CreateThriftSharedMemorySessionEmptyStub;
 	HoudiniApi::CreateThriftSocketSession = &HoudiniApi::CreateThriftSocketSessionEmptyStub;
 	HoudiniApi::CreateWorkItem = &HoudiniApi::CreateWorkItemEmptyStub;
-	HoudiniApi::CreateWorkitem = &HoudiniApi::CreateWorkitemEmptyStub;
 	HoudiniApi::CurveInfo_Create = &HoudiniApi::CurveInfo_CreateEmptyStub;
 	HoudiniApi::CurveInfo_Init = &HoudiniApi::CurveInfo_InitEmptyStub;
 	HoudiniApi::DeleteAttribute = &HoudiniApi::DeleteAttributeEmptyStub;
@@ -1893,6 +1862,8 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::GetAvailableAssets = &HoudiniApi::GetAvailableAssetsEmptyStub;
 	HoudiniApi::GetBoxInfo = &HoudiniApi::GetBoxInfoEmptyStub;
 	HoudiniApi::GetCacheProperty = &HoudiniApi::GetCachePropertyEmptyStub;
+	HoudiniApi::GetCameraInfo = &HoudiniApi::GetCameraInfoEmptyStub;
+	HoudiniApi::GetCameraTransform = &HoudiniApi::GetCameraTransformEmptyStub;
 	HoudiniApi::GetComposedChildNodeList = &HoudiniApi::GetComposedChildNodeListEmptyStub;
 	HoudiniApi::GetComposedNodeCookResult = &HoudiniApi::GetComposedNodeCookResultEmptyStub;
 	HoudiniApi::GetComposedObjectList = &HoudiniApi::GetComposedObjectListEmptyStub;
@@ -1900,8 +1871,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::GetCompositorOptions = &HoudiniApi::GetCompositorOptionsEmptyStub;
 	HoudiniApi::GetConnectionError = &HoudiniApi::GetConnectionErrorEmptyStub;
 	HoudiniApi::GetConnectionErrorLength = &HoudiniApi::GetConnectionErrorLengthEmptyStub;
-	HoudiniApi::GetCookingCurrentCount = &HoudiniApi::GetCookingCurrentCountEmptyStub;
-	HoudiniApi::GetCookingTotalCount = &HoudiniApi::GetCookingTotalCountEmptyStub;
 	HoudiniApi::GetCurveCounts = &HoudiniApi::GetCurveCountsEmptyStub;
 	HoudiniApi::GetCurveInfo = &HoudiniApi::GetCurveInfoEmptyStub;
 	HoudiniApi::GetCurveKnots = &HoudiniApi::GetCurveKnotsEmptyStub;
@@ -1949,7 +1918,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::GetNodeOutputName = &HoudiniApi::GetNodeOutputNameEmptyStub;
 	HoudiniApi::GetNodePath = &HoudiniApi::GetNodePathEmptyStub;
 	HoudiniApi::GetNumWorkItems = &HoudiniApi::GetNumWorkItemsEmptyStub;
-	HoudiniApi::GetNumWorkitems = &HoudiniApi::GetNumWorkitemsEmptyStub;
 	HoudiniApi::GetObjectInfo = &HoudiniApi::GetObjectInfoEmptyStub;
 	HoudiniApi::GetObjectTransform = &HoudiniApi::GetObjectTransformEmptyStub;
 	HoudiniApi::GetOutputGeoCount = &HoudiniApi::GetOutputGeoCountEmptyStub;
@@ -2018,13 +1986,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::GetWorkItemOutputFiles = &HoudiniApi::GetWorkItemOutputFilesEmptyStub;
 	HoudiniApi::GetWorkItemStringAttribute = &HoudiniApi::GetWorkItemStringAttributeEmptyStub;
 	HoudiniApi::GetWorkItems = &HoudiniApi::GetWorkItemsEmptyStub;
-	HoudiniApi::GetWorkitemDataLength = &HoudiniApi::GetWorkitemDataLengthEmptyStub;
-	HoudiniApi::GetWorkitemFloatData = &HoudiniApi::GetWorkitemFloatDataEmptyStub;
-	HoudiniApi::GetWorkitemInfo = &HoudiniApi::GetWorkitemInfoEmptyStub;
-	HoudiniApi::GetWorkitemIntData = &HoudiniApi::GetWorkitemIntDataEmptyStub;
-	HoudiniApi::GetWorkitemResultInfo = &HoudiniApi::GetWorkitemResultInfoEmptyStub;
-	HoudiniApi::GetWorkitemStringData = &HoudiniApi::GetWorkitemStringDataEmptyStub;
-	HoudiniApi::GetWorkitems = &HoudiniApi::GetWorkitemsEmptyStub;
 	HoudiniApi::HandleBindingInfo_Create = &HoudiniApi::HandleBindingInfo_CreateEmptyStub;
 	HoudiniApi::HandleBindingInfo_Init = &HoudiniApi::HandleBindingInfo_InitEmptyStub;
 	HoudiniApi::HandleInfo_Create = &HoudiniApi::HandleInfo_CreateEmptyStub;
@@ -2165,6 +2126,8 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::SetGroupMembership = &HoudiniApi::SetGroupMembershipEmptyStub;
 	HoudiniApi::SetHeightFieldData = &HoudiniApi::SetHeightFieldDataEmptyStub;
 	HoudiniApi::SetImageInfo = &HoudiniApi::SetImageInfoEmptyStub;
+	HoudiniApi::SetInputCameraInfo = &HoudiniApi::SetInputCameraInfoEmptyStub;
+	HoudiniApi::SetInputCameraTransform = &HoudiniApi::SetInputCameraTransformEmptyStub;
 	HoudiniApi::SetInputCurveInfo = &HoudiniApi::SetInputCurveInfoEmptyStub;
 	HoudiniApi::SetInputCurvePositions = &HoudiniApi::SetInputCurvePositionsEmptyStub;
 	HoudiniApi::SetInputCurvePositionsRotationsScales = &HoudiniApi::SetInputCurvePositionsRotationsScalesEmptyStub;
@@ -2197,9 +2160,6 @@ HoudiniApi::FinalizeHAPI()
 	HoudiniApi::SetWorkItemFloatAttribute = &HoudiniApi::SetWorkItemFloatAttributeEmptyStub;
 	HoudiniApi::SetWorkItemIntAttribute = &HoudiniApi::SetWorkItemIntAttributeEmptyStub;
 	HoudiniApi::SetWorkItemStringAttribute = &HoudiniApi::SetWorkItemStringAttributeEmptyStub;
-	HoudiniApi::SetWorkitemFloatData = &HoudiniApi::SetWorkitemFloatDataEmptyStub;
-	HoudiniApi::SetWorkitemIntData = &HoudiniApi::SetWorkitemIntDataEmptyStub;
-	HoudiniApi::SetWorkitemStringData = &HoudiniApi::SetWorkitemStringDataEmptyStub;
 	HoudiniApi::Shutdown = &HoudiniApi::ShutdownEmptyStub;
 	HoudiniApi::StartPerformanceMonitorProfile = &HoudiniApi::StartPerformanceMonitorProfileEmptyStub;
 	HoudiniApi::StartThriftNamedPipeServer = &HoudiniApi::StartThriftNamedPipeServerEmptyStub;
@@ -2278,6 +2238,20 @@ HoudiniApi::BindCustomImplementationEmptyStub(HAPI_SessionType session_type, con
 }
 
 
+HAPI_CameraInfo
+HoudiniApi::CameraInfo_CreateEmptyStub()
+{
+	return HAPI_CameraInfo();
+}
+
+
+void
+HoudiniApi::CameraInfo_InitEmptyStub(HAPI_CameraInfo* in)
+{
+	return;
+}
+
+
 HAPI_Result
 HoudiniApi::CancelPDGCookEmptyStub(const HAPI_Session * session, HAPI_PDG_GraphContextId graph_context_id)
 {
@@ -2322,13 +2296,6 @@ HoudiniApi::CommitGeoEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id
 
 HAPI_Result
 HoudiniApi::CommitWorkItemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::CommitWorkitemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -2454,7 +2421,7 @@ HoudiniApi::CookPDGAllOutputsEmptyStub(const HAPI_Session* session, HAPI_NodeId 
 
 
 HAPI_Result
-HoudiniApi::CreateCOPImageEmptyStub(const HAPI_Session * session, HAPI_NodeId parent_node_id, const int width, const int height, const HAPI_ImagePacking packing, HAPI_Bool flip_x, HAPI_Bool flip_y, const float * data_array, int start, int length)
+HoudiniApi::CreateCOPImageEmptyStub(const HAPI_Session * session, HAPI_NodeId parent_node_id, const int width, const int height, const HAPI_ImagePacking packing, HAPI_Bool flip_x, HAPI_Bool flip_y, const float * data_array, int start, int length, HAPI_NodeId * new_node_id)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -2483,6 +2450,13 @@ HoudiniApi::CreateHeightfieldInputVolumeNodeEmptyStub(const HAPI_Session * sessi
 
 HAPI_Result
 HoudiniApi::CreateInProcessSessionEmptyStub(HAPI_Session * session, const HAPI_SessionInfo * session_info)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::CreateInputCameraNodeEmptyStub(const HAPI_Session * session, HAPI_NodeId parent_node_id, HAPI_NodeId * node_id, const char * camera_name, const char * node_label)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -2532,13 +2506,6 @@ HoudiniApi::CreateThriftSocketSessionEmptyStub(HAPI_Session * session, const cha
 
 HAPI_Result
 HoudiniApi::CreateWorkItemEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId * work_item_id, const char * name, int index)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::CreateWorkitemEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId * workitem_id, const char * name, int index)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -3000,6 +2967,20 @@ HoudiniApi::GetCachePropertyEmptyStub(const HAPI_Session * session, const char *
 
 
 HAPI_Result
+HoudiniApi::GetCameraInfoEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PartId part_id, HAPI_CameraInfo * camera_info)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::GetCameraTransformEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PartId part_id, HAPI_Transform * transform)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
 HoudiniApi::GetComposedChildNodeListEmptyStub(const HAPI_Session * session, HAPI_NodeId parent_node_id, HAPI_NodeId * child_node_ids_array, int count)
 {
 	return HAPI_RESULT_FAILURE;
@@ -3043,20 +3024,6 @@ HoudiniApi::GetConnectionErrorEmptyStub(char * string_value, int length, HAPI_Bo
 
 HAPI_Result
 HoudiniApi::GetConnectionErrorLengthEmptyStub(int * buffer_length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetCookingCurrentCountEmptyStub(const HAPI_Session * session, int * count)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetCookingTotalCountEmptyStub(const HAPI_Session * session, int * count)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -3386,13 +3353,6 @@ HoudiniApi::GetNodePathEmptyStub(const HAPI_Session * session, HAPI_NodeId node_
 
 HAPI_Result
 HoudiniApi::GetNumWorkItemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, int * num)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetNumWorkitemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, int * num)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -3869,55 +3829,6 @@ HoudiniApi::GetWorkItemStringAttributeEmptyStub(const HAPI_Session * session, HA
 
 HAPI_Result
 HoudiniApi::GetWorkItemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, int * work_item_ids_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemDataLengthEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, int * length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemFloatDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, float * data_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemInfoEmptyStub(const HAPI_Session * session, HAPI_PDG_GraphContextId graph_context_id, HAPI_PDG_WorkItemId workitem_id, HAPI_PDG_WorkItemInfo * workitem_info)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemIntDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, int * data_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemResultInfoEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, HAPI_PDG_WorkItemOutputFile * resultinfo_array, int resultinfo_count)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemStringDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, HAPI_StringHandle * data_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::GetWorkitemsEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, int * workitem_ids_array, int length)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -4561,7 +4472,7 @@ HoudiniApi::SetAttributeFloatUniqueDataAsyncEmptyStub(const HAPI_Session* sessio
 
 
 HAPI_Result
-HoudiniApi::SetAttributeIndexedStringDataEmptyStub(const HAPI_Session* session, HAPI_NodeId node_id, HAPI_PartId part_id, const char* name, const HAPI_AttributeInfo* attr_info, const char** string_array, int string_count, const int* indices_array, int indices_start, int indices_length)
+HoudiniApi::SetAttributeIndexedStringDataEmptyStub(const HAPI_Session* session, HAPI_NodeId node_id, HAPI_PartId part_id, const char* name, const HAPI_AttributeInfo* attr_info, const char** string_fixed_array, int string_fixed_length, const int* indices_array, int indices_start, int indices_length)
 {
 	return HAPI_RESULT_FAILURE;
 }
@@ -4904,6 +4815,20 @@ HoudiniApi::SetImageInfoEmptyStub(const HAPI_Session * session, HAPI_NodeId mate
 
 
 HAPI_Result
+HoudiniApi::SetInputCameraInfoEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, const HAPI_CameraInfo * camera_info)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
+HoudiniApi::SetInputCameraTransformEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_RSTOrder rst_order, HAPI_XYZOrder rot_order, const HAPI_Transform * transform)
+{
+	return HAPI_RESULT_FAILURE;
+}
+
+
+HAPI_Result
 HoudiniApi::SetInputCurveInfoEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PartId part_id, const HAPI_InputCurveInfo * info)
 {
 	return HAPI_RESULT_FAILURE;
@@ -5122,27 +5047,6 @@ HoudiniApi::SetWorkItemIntAttributeEmptyStub(const HAPI_Session * session, HAPI_
 
 HAPI_Result
 HoudiniApi::SetWorkItemStringAttributeEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId work_item_id, const char * attribute_name, int data_index, const char * value)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::SetWorkitemFloatDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, const float * values_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::SetWorkitemIntDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, const int * values_array, int length)
-{
-	return HAPI_RESULT_FAILURE;
-}
-
-
-HAPI_Result
-HoudiniApi::SetWorkitemStringDataEmptyStub(const HAPI_Session * session, HAPI_NodeId node_id, HAPI_PDG_WorkItemId workitem_id, const char * data_name, int data_index, const char * value)
 {
 	return HAPI_RESULT_FAILURE;
 }

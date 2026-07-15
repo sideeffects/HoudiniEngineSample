@@ -28,6 +28,7 @@
 
 #include <HAPI/HAPI.h>
 #include <string>
+#include <vector>
 
 #define DEFAULT_NAMED_PIPE "hapi"
 #define DEFAULT_HOST_NAME "127.0.0.1"
@@ -75,6 +76,9 @@ public:
 	// Instantiate and asynchronously cook the given node
 	bool createAndCookNode(const char* operator_name, HAPI_NodeId * node_id);
 
+	// Prints all nodes beneath the current node
+	bool printAllNodes(HAPI_NodeId node_id);
+
 	// Query and list the paramters of the given node
 	bool getParameters(HAPI_NodeId node_id);
 
@@ -90,5 +94,5 @@ private:
 	SessionType mySessionType = InProcess;
 	std::string myNamedPipe = DEFAULT_NAMED_PIPE;
 	int myTcpPort = DEFAULT_TCP_PORT;
-        std::string mySharedMemoryName;
+	std::string mySharedMemoryName;
 };

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.5 )
+cmake_minimum_required( VERSION 3.11 )
 
 project( HoudiniEngineSample )
 
@@ -14,6 +14,7 @@ set( SOURCES
     ${HE_SAMPLE_ROOT}/Source/HoudiniApi.cpp
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineGeometry.cpp
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineManager.cpp
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePDG.cpp
     ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePlatform.cpp
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineSample.cpp
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineUtility.cpp
@@ -23,12 +24,15 @@ set( HEADERS
     ${HE_SAMPLE_ROOT}/Source/HoudiniApi.h
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineGeometry.h
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineManager.h
+    ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePDG.h
     ${HE_SAMPLE_ROOT}/Source/HoudiniEnginePlatform.h
     ${HE_SAMPLE_ROOT}/Source/HoudiniEngineUtility.h
 )
 
 set( FILES
     ${HE_SAMPLE_ROOT}/HDA/hexagona_lite.hda
+    ${HE_SAMPLE_ROOT}/HDA/pdg_noise.hda
+    ${HE_SAMPLE_ROOT}/HDA/pdg_sample.hda
 )
 
 add_executable( ${PROJECT_NAME} ${SOURCES} )
